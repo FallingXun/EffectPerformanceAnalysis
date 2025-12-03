@@ -1,0 +1,15 @@
+{
+  "name": "com.xun.effectperformanceanalysis",
+  "version": "0.0.0",
+  "displayName": "Effect Performance Analysis",
+  "description": "The tool for unity to analyze the performance of effect.",
+  "unity": "2020.3",
+  "unityRelease": "26f1",
+  "keywords": [
+    "effect",
+    "performance"
+  ],
+  "author": {
+    "name": "Xun"
+  }
+}
