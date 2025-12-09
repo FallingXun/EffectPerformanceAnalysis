@@ -1,0 +1,18 @@
+{
+    "name": "Xun.EffectPerformanceAnalysis.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:11191e34a0ff91f4f959854387289468"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
