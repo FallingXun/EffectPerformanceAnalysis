@@ -120,7 +120,7 @@ namespace EffectPerformanceAnalysis
             m_SortingOrderStart = EditorGUILayout.IntField(m_SortingOrderStart, GUILayout.Width(100));
             GUILayout.FlexibleSpace();
 
-            PerformanceData performanceData = Performance.Analyze(m_GameObject, m_SortingOrderStart);
+            MetricsData performanceData = Performance.Analyze(m_GameObject, m_SortingOrderStart);
 
             if (GUILayout.Button("����", GUILayout.Width(50)))
             {

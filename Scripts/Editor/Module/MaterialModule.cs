@@ -258,56 +258,6 @@ namespace EffectPerformanceAnalysis
             return m_MaterialIdDict[material];
         }
 
-
-
-
-        public bool DynamicBatching(Material sMaterial, Material tMaterial, Mesh sMesh, Mesh tMesh)
-        {
-            if (sMaterial == null || tMaterial == null || sMesh == null || tMesh == null)
-            {
-                return false;
-            }
-            if (sMaterial != tMaterial)
-            {
-                return false;
-            }
-            if (sMaterial.passCount > 1)
-            {
-                return false;
-            }
-            if (sMesh.vertexCount > 300 || tMesh.vertexCount > 300)
-            {
-                return false;
-            }
-            if (sMesh.vertexCount * sMesh.vertexAttributeCount > 900 || sMesh.vertexCount * sMesh.vertexAttributeCount > 900)
-            {
-                return false;
-            }
-            return true;
-        }
-
-        public bool SRPBatch(Material sMaterial, Material tMaterial)
-        {
-            if (sMaterial == null || tMaterial == null)
-            {
-                return false;
-            }
-            if(sMaterial.passCount > 1 || tMaterial.passCount > 1)
-            {
-                return false;
-            }
-            if (sMaterial.shader != tMaterial.shader)
-            {
-                return false;
-            }
-            var sGroup = GetShaderKeywordsGroupId(sMaterial);
-            var tGroup = GetShaderKeywordsGroupId(tMaterial);
-            if (sGroup != tGroup || sGroup < 0 || tGroup < 0)
-            {
-                return false;
-            }
-            return true;
-        }
     }
 }
 

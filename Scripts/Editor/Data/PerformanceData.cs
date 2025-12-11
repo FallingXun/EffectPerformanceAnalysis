@@ -4,23 +4,41 @@ using UnityEngine;
 
 namespace EffectPerformanceAnalysis
 {
-    public struct PerformanceData
+    public struct MetricsData:IMetrics
     {
-        public int sortingOrderStart;
-        public int materialMaxCount;
-        public int particleMaxCount;
-        public int totalBatchCount;
-        public int totalMaterialCount;
-        public int totalMeshVertexCount;
-        public int totalMeshTriangleCount;
-        public int totalRenderVertexCount;
-        public int totalRenderTriangleCount;
-        public int totalTextureCount;
-        public int totalTextureSize;
-        public int totalTextureMaxWidth;
-        public int totalTextureMaxHeight;
-        public long totalTextureMemory;
-        public List<PerformanceNodeData> nodeDataList;
+        private EffectData effectData;
+        private List<NodeUnitData> nodeUnitList;
+        private int sortingOrderStart;
+
+        public int rendererQueue { get; private set; }
+
+
+        public MetricsData(GameObject root, int sortingOrderStart)
+        {
+            this.effectData = new EffectData(root);
+            int index = 0;
+            this.nodeUnitList = new List<NodeUnitData>();
+            foreach (var renderer in effectData.RendererList)
+            {
+                var nodeUnit = new NodeUnitData(renderer, index++);
+                nodeUnitList.Add(nodeUnit);
+            }
+            nodeUnitList.Sort((a,b) => {
+                return a.CompareTo(b);
+            });
+            this.sortingOrderStart = sortingOrderStart;
+
+        }
+
+        private void SetNodeMetrics()
+        {
+            PerformanceNodeData
+        }
+
+        private void SetMetrics()
+        {
+
+        }
     }
 
 }

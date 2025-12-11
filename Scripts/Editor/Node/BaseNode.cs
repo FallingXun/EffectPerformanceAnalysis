@@ -12,7 +12,7 @@ namespace EffectPerformanceAnalysis
         protected List<Texture> m_TextureList = new List<Texture>();
         protected List<Mesh> m_MeshList = new List<Mesh>();
 
-        public abstract ENodeType nodeType { get; }
+        public abstract EComponentType nodeType { get; }
 
         public Renderer renderer { get; protected set; }
 
@@ -164,11 +164,11 @@ namespace EffectPerformanceAnalysis
             }
         }
 
-        public virtual int batch
+        public virtual int batchCount
         {
             get
             {
-                return totalPassCount;
+                return passCount;
             }
         }
 
@@ -212,7 +212,7 @@ namespace EffectPerformanceAnalysis
         {
             get
             {
-                return totalPassCount * meshVertexCount;
+                return passCount * meshVertexCount;
             }
         }
 
@@ -220,11 +220,11 @@ namespace EffectPerformanceAnalysis
         {
             get
             {
-                return totalPassCount * meshTriangleCount;
+                return passCount * meshTriangleCount;
             }
         }
 
-        public virtual int totalPassCount
+        public virtual int passCount
         {
             get
             {
@@ -361,7 +361,7 @@ namespace EffectPerformanceAnalysis
             if (Utils.UsingSRP())
             {
                 // SBP 除粒子外都有可能合批
-                result = (nodeType == ENodeType.ParticleSystem).CompareTo(target.nodeType == ENodeType.ParticleSystem);
+                result = (nodeType == EComponentType.ParticleSystemRenderer).CompareTo(target.nodeType == EComponentType.ParticleSystemRenderer);
                 if (result != 0)
                 {
                     return result;

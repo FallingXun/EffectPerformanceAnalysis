@@ -7,11 +7,11 @@ namespace EffectPerformanceAnalysis
 {
     public class SkinnedMeshRendererNode : BaseNode
     {
-        public override ENodeType nodeType
+        public override EComponentType nodeType
         {
             get
             {
-                return ENodeType.SkinnedMeshRenderer;
+                return EComponentType.SkinnedMeshRenderer;
             }
         }
 

@@ -6,11 +6,11 @@ namespace EffectPerformanceAnalysis
 {
     public class MeshRendererNode : BaseNode
     {
-        public override ENodeType nodeType
+        public override EComponentType nodeType
         {
             get
             {
-                return ENodeType.MeshRenderer;
+                return EComponentType.MeshRenderer;
             }
         }
 

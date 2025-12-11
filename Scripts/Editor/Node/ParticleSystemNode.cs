@@ -7,11 +7,11 @@ namespace EffectPerformanceAnalysis
     public class ParticleSystemNode : BaseNode
     {
 
-        public override ENodeType nodeType
+        public override EComponentType nodeType
         {
             get
             {
-                return ENodeType.ParticleSystem;
+                return EComponentType.ParticleSystemRenderer;
             }
         }
 
@@ -179,7 +179,7 @@ namespace EffectPerformanceAnalysis
             }
         }
 
-        public override int totalPassCount
+        public override int passCount
         {
             get
             {

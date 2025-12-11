@@ -10,7 +10,7 @@ namespace EffectPerformanceAnalysis
         public BaseNode effect;
         public int renderQueue;
         public int sortingOrder;
-        public ENodeType componentType;
+        public EComponentType componentType;
         public bool batch;
         public int batchCount;
         public int meshVertexCount;
@@ -89,7 +89,7 @@ namespace EffectPerformanceAnalysis
 
             if (Utils.UsingSRP())
             {
-                result = (componentType == ENodeType.ParticleSystem).CompareTo(target.componentType == ENodeType.ParticleSystem);
+                result = (componentType == EComponentType.ParticleSystemRenderer).CompareTo(target.componentType == EComponentType.ParticleSystemRenderer);
                 if (result != 0)
                 {
                     return result;
@@ -122,11 +122,11 @@ namespace EffectPerformanceAnalysis
             }
             if (Utils.UsingSRP())
             {
-                if ((componentType == ENodeType.ParticleSystem) ^ (target.componentType == ENodeType.ParticleSystem))
+                if ((componentType == EComponentType.ParticleSystemRenderer) ^ (target.componentType == EComponentType.ParticleSystemRenderer))
                 {
                     return false;
                 }
-                if (componentType == ENodeType.ParticleSystem)
+                if (componentType == EComponentType.ParticleSystemRenderer)
                 {
                     if (renderQueue != target.renderQueue)
                     {

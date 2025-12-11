@@ -16,7 +16,6 @@ namespace EffectPerformanceAnalysis
             }
         }
 
-
         public MaterialModule materialModule { get; private set; }
         public TextureModule textureModule { get; private set; }
         public MeshModule meshModule { get; private set; }
@@ -32,7 +31,13 @@ namespace EffectPerformanceAnalysis
                 {
                     continue;
                 }
-                m_RendererList.Add(renderer);
+                var materials = Pools.Get<List<Material>>();
+                MaterialUtils.GetMaterials(materials, renderer);
+                if(materials.Count > 0)
+                {
+                    m_RendererList.Add(renderer);
+                }
+                Pools.Release(materials);
             }
 
             materialModule = new MaterialModule();

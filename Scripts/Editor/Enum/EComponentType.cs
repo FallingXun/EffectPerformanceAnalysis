@@ -1,10 +1,10 @@
 namespace EffectPerformanceAnalysis
 {
-    public enum ENodeType
+    public enum EComponentType
     {
         None = 0,
         SkinnedMeshRenderer,
         MeshRenderer,
-        ParticleSystem,
+        ParticleSystemRenderer,
     }
 }
