@@ -28,6 +28,7 @@ namespace EffectPerformanceAnalysis
             });
             this.sortingOrderStart = sortingOrderStart;
 
+            rendererQueue = 
         }
 
         private void SetNodeMetrics()
@@ -35,10 +36,7 @@ namespace EffectPerformanceAnalysis
             PerformanceNodeData
         }
 
-        private void SetMetrics()
-        {
-
-        }
+       
     }
 
 }

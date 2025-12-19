@@ -79,6 +79,11 @@ namespace EffectPerformanceAnalysis
                     }
             }
         }
+
+        public static bool Batch(RenderNode source, RenderNode target)
+        {
+            return false;
+        }
     }
 
 }

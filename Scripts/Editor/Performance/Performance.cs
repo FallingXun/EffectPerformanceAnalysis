@@ -14,11 +14,8 @@ namespace EffectPerformanceAnalysis
         public const int SORTING_ORDER_MAX = 32767;
         public const int SORTING_ORDER_INVAILD = 32768;
 
-        private static List<int> m_TempBatchList = new List<int>();
 
         private static List<NodeUnitData> m_NodeUnitList = new List<NodeUnitData>();
-
-        public static EffectData effectData { get; private set; }
 
 
         static Performance()
@@ -34,19 +31,6 @@ namespace EffectPerformanceAnalysis
                 return new MetricsData();
             }
 
-            effectData = new EffectData(root);
-            m_NodeUnitList.Clear();
-            int index = 0;
-            foreach (var renderer in effectData.RendererList)
-            {
-                var nodeUnit = new NodeUnitData(renderer, index++);
-                m_NodeUnitList.Add(nodeUnit);
-            }
-
-            m_NodeUnitList.Sort((a, b) =>
-            {
-                return a.CompareTo(b);
-            });
 
 
 

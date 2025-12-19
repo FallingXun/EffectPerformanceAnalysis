@@ -4,38 +4,78 @@ using UnityEngine;
 
 namespace EffectPerformanceAnalysis
 {
-    public struct NodeUnitData
+    public class NodeUnitData
     {
-        public Renderer renderer;
-        public EComponentType componentType;
-        public List<RenderUnitData> renderUnitList;
-        public int rendererIndex;
+        private List<RenderNode> renderNodeList = new List<RenderNode>();
 
-        public NodeUnitData(Renderer renderer,int rendererIndex)
+        public int renderQueue { get; private set; }
+
+        public int sortingOrder { get; private set; }
+
+        public int meshVertexCount { get; private set; }
+
+        public int meshVertexAttributeCount { get; private set; }
+
+        public int meshTriangleCount { get; private set; }
+
+        public int renderVertexCount { get; private set; }
+
+        public int renderTriangleCount { get; private set; }
+
+        public int batchCount { get; private set; }
+
+        public int passCount { get; private set; }
+
+        public int textureCount { get; private set; }
+
+        public int textureSize { get; private set; }
+
+        public int textureMaxWidth { get; private set; }
+
+        public long textureMemory { get; private set; }
+
+        public void Init(Renderer renderer)
         {
-            this.renderer = renderer;
-            this.rendererIndex = rendererIndex;
-            this.componentType = RendererUtils.GetComponentType(renderer);
-            var materials = Pools.Get<List<Material>>();
-            MaterialUtils.GetMaterials(materials, renderer);
-            if (materials.Count > 0)
+            renderNodeList.Clear();
+            if (renderer != null && renderer.sharedMaterials != null)
             {
-                this.renderUnitList = new List<RenderUnitData>();
-                foreach (var material in materials)
+                for (int i = 0; i < renderer.sharedMaterials.Length; i++)
                 {
-                    var rendererUnit = new RenderUnitData(material, renderer, rendererIndex);
-                    renderUnitList.Add(rendererUnit);
+                    var material = renderer.sharedMaterials[i];
+                    if (material == null)
+                    {
+                        continue;
+                    }
+                    var node = new RenderNode(material, renderer, i);
+                    renderNodeList.Add(node);
                 }
-                renderUnitList.Sort((a, b) =>
+                renderNodeList.Sort((a, b) =>
                 {
-                    return a.CompareTo(b);
+                    return ComparerUtils.Compare(a, b);
                 });
             }
-            else
+
+            var materialList = Pools.Get<List<Material>>();
+            MaterialUtils.GetAllMaterial(materialList, renderer);
+            var textureList = Pools.Get<List<Texture>>();
+            foreach (var material in materialList)
             {
-                this.renderUnitList = null;
+                TextureUtils.GetAllTextures(textureList, material);
             }
-            Pools.Release(materials);
+
+            sortingOrder = RendererUtils.GetSortingOrder(renderNodeList[0].renderer);
+            renderQueue = MaterialUtils.GetRenderQueue(renderNodeList[0].material);
+            meshVertexCount = MeshUtils.GetMeshVertexCount(renderNodeList[0].mesh);
+            meshVertexAttributeCount = MeshUtils.GetMeshVertexAttributeCombination(renderNodeList[0].mesh);
+            meshTriangleCount = MeshUtils.GetMeshTriangleCount(renderNodeList[0].mesh);
+            renderVertexCount = MeshUtils.GetRenderTraingleCount(renderNodeList[0].mesh, MaterialUtils.GetPassCount(renderNodeList[0].material), renderNodeList[0].renderer);
+            for (int i = 1; i < renderNodeList.Count; i++)
+            {
+                if (BatchUtils.Batch(renderNodeList[i - 1], renderNodeList[i]))
+                {
+
+                }
+            }
         }
 
         public int CompareTo(NodeUnitData target)

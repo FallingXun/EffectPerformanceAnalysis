@@ -11,13 +11,11 @@ namespace EffectPerformanceAnalysis
         public Shader shader;
         public EComponentType componentType;
         public Renderer renderer;
-        public int rendererIndex;
 
-        public RenderUnitData(Material material, Renderer renderer,int rendererIndex)
+        public RenderUnitData(Material material, Renderer renderer)
         {
             this.material = material;
             this.renderer = renderer;
-            this.rendererIndex = rendererIndex;
             this.shader = ShaderUtils.GetShader(material);
             this.componentType = RendererUtils.GetComponentType(renderer);
             this.mesh = MeshUtils.GetMesh(renderer);

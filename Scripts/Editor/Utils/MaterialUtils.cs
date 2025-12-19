@@ -6,20 +6,26 @@ namespace EffectPerformanceAnalysis
 {
     public static class MaterialUtils
     {
-        public static void GetMaterials(ICollection<Material> materials, Renderer renderer)
+
+        public static void GetAllMaterial(List<Material> materialList,Renderer renderer)
         {
-            if (renderer != null && renderer.sharedMaterials!=null)
+            if (renderer != null && renderer.sharedMaterials != null)
             {
                 foreach (var material in renderer.sharedMaterials)
                 {
-                    if(material == null)
+                    if (material == null)
                     {
                         continue;
                     }
-                    materials.Add(material);
+                    if (materialList.Contains(material))
+                    {
+                        continue;
+                    }
+                    materialList.Add(material);
                 }
             }
         }
+
 
         public static int GetRenderQueue(Material material)
         {
@@ -29,6 +35,7 @@ namespace EffectPerformanceAnalysis
             }
             return 0;
         }
+
 
         public static int GetPassCount(Material material)
         {
@@ -53,6 +60,49 @@ namespace EffectPerformanceAnalysis
             }
             return 0;
         }
+
+        public static int GetMaterialIndex(Material material, Renderer renderer, int sharedMaterialIndex = 0)
+        {
+            if (material != null && renderer != null && renderer.sharedMaterials != null)
+            {
+                // todo：SRP 下合批不需要考虑材质球顺序？
+                var index = 0;
+                for (int i = 0; i < renderer.sharedMaterials.Length; i++)
+                {
+                    if (renderer.sharedMaterials[i] == null)
+                    {
+                        continue;
+                    }
+                    if (renderer.sharedMaterials[i].renderQueue > material.renderQueue)
+                    {
+                        continue;
+                    }
+                    if (renderer.sharedMaterials[i] == material && i >= sharedMaterialIndex)
+                    {
+                        break;
+                    }
+                    index++;
+                }
+            }
+            return 0;
+        }
+
+        public static bool Batch(Material source, Material target, EBatchType batchType)
+        {
+            switch (batchType)
+            {
+                case EBatchType.DynamicBatch:
+                    {
+                        return DynamicBatch(source, target);
+                    }
+                case EBatchType.SBPBatch:
+                    {
+                        return SRPBatch(source, target);
+                    }
+            }
+            return false;
+        }
+
 
         public static bool DynamicBatch(Material source, Material target)
         {

@@ -11,7 +11,7 @@ namespace EffectPerformanceAnalysis
         private static MethodInfo m_GetStorageMemorySizeLong = null;
         private static object[] m_ObjectParams = new object[1];
 
-        public static string GetTextureSizeFormat(long value)
+        public static string GetAllTexturesizeFormat(long value)
         {
             string result = "";
             if (value > 1024 * 1024 * 1024)
@@ -52,7 +52,7 @@ namespace EffectPerformanceAnalysis
 
 
 
-        public static void GetTextures(HashSet<Texture> textureList, Material material)
+        public static void GetAllTextures(List<Texture> textureList, Material material)
         {
             if (material != null)
             {
@@ -77,21 +77,22 @@ namespace EffectPerformanceAnalysis
             }
         }
 
-        public static int GetTexturesCount(Material material)
+
+        public static int GetAllTexturesCount(Material material)
         {
             var count = 0;
-            var textureList = Pools.Get<HashSet<Texture>>();
-            GetTextures(textureList, material);
+            var textureList = Pools.Get<List<Texture>>();
+            GetAllTextures(textureList, material);
             count = textureList.Count;
             Pools.Release(textureList);
             return count;
         }
 
-        public static int GetTexturesSize(Material material)
+        public static int GetAllTexturesSize(Material material)
         {
             var size = 0;
-            var textureList = Pools.Get<HashSet<Texture>>();
-            GetTextures(textureList, material);
+            var textureList = Pools.Get<List<Texture>>();
+            GetAllTextures(textureList, material);
             foreach (var texture in textureList)
             {
                 size += texture.width * texture.height;
@@ -100,11 +101,11 @@ namespace EffectPerformanceAnalysis
             return size;
         }
 
-        public static int GetTexturesMaxWidth(Material material)
+        public static int GetAllTexturesMaxWidth(Material material)
         {
             var maxWidth = 0;
-            var textureList = Pools.Get<HashSet<Texture>>();
-            GetTextures(textureList, material);
+            var textureList = Pools.Get<List<Texture>>();
+            GetAllTextures(textureList, material);
             foreach (var texture in textureList)
             {
                 maxWidth = Mathf.Max(maxWidth, texture.width);
@@ -113,11 +114,11 @@ namespace EffectPerformanceAnalysis
             return maxWidth;
         }
 
-        public static int GetTexturesMaxHeight(Material material)
+        public static int GetAllTexturesMaxHeight(Material material)
         {
             var maxHeight = 0;
-            var textureList = Pools.Get<HashSet<Texture>>();
-            GetTextures(textureList, material);
+            var textureList = Pools.Get<List<Texture>>();
+            GetAllTextures(textureList, material);
             foreach (var texture in textureList)
             {
                 maxHeight = Mathf.Max(maxHeight, texture.width);
@@ -126,11 +127,11 @@ namespace EffectPerformanceAnalysis
             return maxHeight;
         }
 
-        public static long GetTexturesMemory(Material material)
+        public static long GetAllTexturesMemory(Material material)
         {
             var memory = 0L;
-            var textureList = Pools.Get<HashSet<Texture>>();
-            GetTextures(textureList, material);
+            var textureList = Pools.Get<List<Texture>>();
+            GetAllTextures(textureList, material);
             foreach (var texture in textureList)
             {
                 memory += GetTextureMemory(texture);
