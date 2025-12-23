@@ -19,7 +19,14 @@ namespace EffectPerformanceAnalysis
                 {
                     continue;
                 }
-                rendererList.Add(renderer);
+                foreach (var material in renderer.sharedMaterials)
+                {
+                    if (material != null)
+                    {
+                        rendererList.Add(renderer);
+                        break;
+                    }
+                }
             }
         }
 

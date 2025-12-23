@@ -8,9 +8,13 @@ namespace EffectPerformanceAnalysis
 
         public const string METRICS_UI_TITLE = "【特效分析】";
         public const string METRICS_UI_SORTING_ORDER_START = "OrderInLayer 起始值";
+        public const string METRICS_UI_EFFECT_ID = "特效 ID";
+        public const string METRICS_UI_BATCH_COUNT = "批次";
         public const string METRICS_UI_RESET = "重置";
         public const string METRICS_UI_UPDATE = "更新";
-        public const string METRICS_UI_LINE = "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
+        public const string METRICS_UI_LINE = "______________________________________________________________________________________________________________________________________________________________________________________________________";
+        public const string METRICS_UI_INDEX = "序号";
+        public const string METRICS_UI_OBJECT = "对象";
 
         public const string METRICS_NAME_SORTING_ORDER = "OrderInLayer";
         public const string METRICS_NAME_RENDER_QUEUE = "RenderQueue";
@@ -19,6 +23,7 @@ namespace EffectPerformanceAnalysis
         public const string METRICS_NAME_MESH_TRIANGLE_COUNT = "网格面数";
         public const string METRICS_NAME_RENDER_VERTEX_COUNT = "渲染顶点数";
         public const string METRICS_NAME_RENDER_TRIANGLE_COUNT = "渲染面数";
+        public const string METRICS_NAME_MATERIAL_COUNT = "材质球数量";
         public const string METRICS_NAME_PASS_COUNT = "Pass数量";
         public const string METRICS_NAME_TEXTURE_COUNT = "纹理数量";
         public const string METRICS_NAME_TEXTURE_SIZE = "纹理尺寸";
@@ -26,6 +31,8 @@ namespace EffectPerformanceAnalysis
         public const string METRICS_NAME_TEXTURE_MAX_HEIGHT = "纹理最大高度";
         public const string METRICS_NAME_TEXTURE_MEMORY = "纹理内存";
         public const string METRICS_NAME_PARTICILE_MAX_COUNT = "粒子最大数量";
+
+
 
         public const string PACKAGE_NAME = "Packages/com.xun.effectperformanceanalysis";
         public const string ASSET_PATH = "Assets/EffectPerformanceAnalysis";

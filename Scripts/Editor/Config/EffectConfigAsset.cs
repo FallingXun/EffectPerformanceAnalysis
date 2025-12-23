@@ -111,6 +111,16 @@ namespace EffectPerformanceAnalysis
             }
             return Const.SORTING_ORDER_INVAILD;
         }
+
+        public int GetEffectId(GameObject go)
+        {
+            var prefab = Utils.GetPrefab(go);
+            if (prefab != null && m_ConfigDict.TryGetValue(prefab, out EffectConfig config))
+            {
+                return config.id;
+            }
+            return -1;
+        }
     }
 
     [Serializable]

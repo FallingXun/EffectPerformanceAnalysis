@@ -20,6 +20,8 @@ namespace EffectPerformanceAnalysis
 
         int renderTriangleCount { get; }
 
+        int materialCount { get; }
+
         int passCount { get; }
 
         int textureCount { get; }

@@ -50,6 +50,7 @@ namespace EffectPerformanceAnalysis
         public int renderVertexCount { get; private set; }
 
         public int renderTriangleCount { get; private set; }
+        public int materialCount { get; private set; }
 
         public int passCount { get; private set; }
 
@@ -107,7 +108,7 @@ namespace EffectPerformanceAnalysis
                 sortingOrder = RendererUtils.GetSortingOrder(m_RenderUnitList[0].renderer);
                 renderQueue = MaterialUtils.GetRenderQueue(m_RenderUnitList[0].material);
                 meshVertexCount = MeshUtils.GetMeshVertexCount(m_RenderUnitList[0].mesh);
-                meshVertexAttributeCount = MeshUtils.GetMeshVertexAttributeCombination(m_RenderUnitList[0].mesh);
+                meshVertexAttributeCount = MeshUtils.GetMeshVertexAttributeCount(m_RenderUnitList[0].mesh);
                 meshTriangleCount = MeshUtils.GetMeshTriangleCount(m_RenderUnitList[0].mesh);
                 renderVertexCount = MeshUtils.GetRenderVertexCount(m_RenderUnitList[0].mesh, MaterialUtils.GetPassCount(m_RenderUnitList[0].material), m_RenderUnitList[0].renderer);
                 renderTriangleCount = MeshUtils.GetRenderTraingleCount(m_RenderUnitList[0].mesh, MaterialUtils.GetPassCount(m_RenderUnitList[0].material), m_RenderUnitList[0].renderer);
@@ -121,6 +122,8 @@ namespace EffectPerformanceAnalysis
                         passCount += MaterialUtils.GetPassCount(m_RenderUnitList[i].material);
                     }
                 }
+                materialCount = materialList.Count;
+
                 textureCount = textureList.Count;
                 textureSize = 0;
                 textureMaxWidth = 0;

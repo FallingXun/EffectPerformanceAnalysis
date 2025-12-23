@@ -6,6 +6,10 @@ namespace EffectPerformanceAnalysis
         OrderInLayer,
         [Display(Const.METRICS_NAME_RENDER_QUEUE)]
         RenderQueue,
+        [Display(Const.METRICS_NAME_MATERIAL_COUNT)]
+        MaterialCount,
+        [Display(Const.METRICS_NAME_PASS_COUNT)]
+        PassCount,
         [Display(Const.METRICS_NAME_MESH_VERTEX_COUNT)]
         MeshVertexCount,
         [Display(Const.METRICS_NAME_MESH_VERTEX_ATTRIBUTES)]
@@ -16,8 +20,6 @@ namespace EffectPerformanceAnalysis
         RenderVertexCount,
         [Display(Const.METRICS_NAME_RENDER_TRIANGLE_COUNT)]
         RenderTriangleCount,
-        [Display(Const.METRICS_NAME_PASS_COUNT)]
-        PassCount,
         [Display(Const.METRICS_NAME_TEXTURE_COUNT)]
         TextureCount,
         [Display(Const.METRICS_NAME_TEXTURE_SIZE)]

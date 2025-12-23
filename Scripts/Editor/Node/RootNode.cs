@@ -49,6 +49,8 @@ namespace EffectPerformanceAnalysis
 
         public int renderTriangleCount { get; private set; }
 
+        public int materialCount { get; private set; }
+
         public int passCount { get; private set; }
 
         public int textureCount { get; private set; }
@@ -156,6 +158,7 @@ namespace EffectPerformanceAnalysis
                 }
 
             }
+            materialCount = materialList.Count;
 
             textureCount = textureList.Count;
             textureSize = 0;
