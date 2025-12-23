@@ -15,3 +15,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           package-name: com.xun.effectperformanceanalysis
           default-branch: main
+
+permissions:
+  contents: write
+  pull-requests: write
