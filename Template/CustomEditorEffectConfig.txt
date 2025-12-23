@@ -1,0 +1,23 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+
+namespace EffectPerformanceAnalysis
+{
+    [CustomEditor(typeof(CustomEffectConfigAsset), true)]
+    public class CustomEffectConfigAssetEditor : Editor
+    {
+        private CustomEffectConfigAsset m_EffecConfigAsset;
+
+        private void OnEnable()
+        {
+            m_EffecConfigAsset = target as CustomEffectConfigAsset;
+        }
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+        }
+    }
+}

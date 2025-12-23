@@ -85,12 +85,12 @@ namespace EffectPerformanceAnalysis
             {
                 if (renderer is ParticleSystemRenderer)
                 {
-                    ParticleSystem ps = renderer.GetComponent<ParticleSystem>();
-                    if (ps != null && mesh != null)
+                    if (mesh != null)
                     {
                         // 粒子特效的网格数量按最大数量计算
                         // todo: 计算 Trails 和多网格
-                        return passCount * mesh.vertexCount * ps.main.maxParticles;
+                        var maxParticleCount = ParticleUtils.GetMaxCount(renderer);
+                        return passCount * mesh.vertexCount * maxParticleCount;
                     }
                 }
                 else
@@ -107,12 +107,12 @@ namespace EffectPerformanceAnalysis
             {
                 if (renderer is ParticleSystemRenderer)
                 {
-                    ParticleSystem ps = renderer.GetComponent<ParticleSystem>();
-                    if (ps != null && mesh != null)
+                    if (mesh != null)
                     {
                         // 粒子特效的网格数量按最大数量计算
                         // todo: 计算 Trails 和多网格
-                        return passCount * GetMeshTriangleCount(mesh) * ps.main.maxParticles;
+                        var maxParticleCount = ParticleUtils.GetMaxCount(renderer);
+                        return passCount * GetMeshTriangleCount(mesh) * maxParticleCount;
                     }
                 }
                 else

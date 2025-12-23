@@ -11,14 +11,9 @@ namespace EffectPerformanceAnalysis
 {
     public class Utils
     {
-
-        private const string PACKAGE_NAME = "Packages/com.xun.effectperformanceanalysis";
-
-
-
         public static string GetPackageRootPath()
         {
-            var path = Path.GetFullPath(PACKAGE_NAME);
+            var path = Path.GetFullPath(Const.PACKAGE_NAME);
             return path;
         }
 
@@ -28,23 +23,64 @@ namespace EffectPerformanceAnalysis
         }
 
 
-        public static ulong GetShaderKeywordsGroup(Material material, Dictionary<string, int> shaderKeywordIdDict)
+        public static GameObject GetPrefab(GameObject go)
         {
-            ulong group = 0;
-            if (material == null || material.shaderKeywords == null || material.shaderKeywords.Length <= 0 || shaderKeywordIdDict == null)
+            if (go != null)
             {
-                return group;
-            }
-            foreach (var keyword in material.shaderKeywords)
-            {
-                if (string.IsNullOrWhiteSpace(keyword) == false)
+                var assetPath = AssetDatabase.GetAssetPath(go);
+                if (string.IsNullOrEmpty(assetPath))
                 {
-                    shaderKeywordIdDict.TryGetValue(keyword, out int id);
-                    group |= (ulong)1 << id;
+                    var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetPrefabStage(go);
+                    if (prefabStage != null)
+                    {
+                        if (prefabStage.prefabContentsRoot == go)
+                        {
+                            assetPath = prefabStage.assetPath;
+                        }
+                    }
+                    else
+                    {
+                        if (PrefabUtility.GetNearestPrefabInstanceRoot(go) == go)
+                        {
+                            assetPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(go);
+                        }
+                    }
+                }
+                if (string.IsNullOrEmpty(assetPath) == false)
+                {
+                    var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
+                    if (prefab != null)
+                    {
+                        return prefab;
+                    }
                 }
             }
-            return group;
+            return null;
         }
+
+        public static void CreateScript(string assetsPath, string templatePath)
+        {
+            var path = Path.Combine(Directory.GetCurrentDirectory(), Const.ASSET_PATH, assetsPath);
+            if (File.Exists(path))
+            {
+                return;
+            }
+            var dir = Path.GetDirectoryName(path);
+            if (Directory.Exists(dir) == false)
+            {
+                Directory.CreateDirectory(dir);
+            }
+            using (var file = File.CreateText(path))
+            {
+                var content = File.ReadAllText(Path.Combine(GetPackageRootPath(), templatePath));
+                if (string.IsNullOrEmpty(content))
+                {
+                    throw new Exception(string.Format("´´½¨½Å±¾Ê§°Ü£º{0}", templatePath));
+                }
+                file.Write(content);
+            }
+        }
+
 
     }
 }

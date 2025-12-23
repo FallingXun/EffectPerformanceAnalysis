@@ -29,7 +29,7 @@ namespace EffectPerformanceAnalysis
             {
                 return renderer.sortingOrder;
             }
-            return Performance.SORTING_ORDER_INVAILD;
+            return Const.SORTING_ORDER_INVAILD;
         }
 
         public static long GetZDepth(Renderer renderer)

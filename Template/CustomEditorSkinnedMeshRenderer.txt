@@ -1,0 +1,59 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+
+namespace EffectPerformanceAnalysis
+{
+    [CanEditMultipleObjects]
+    [CustomEditor(typeof(SkinnedMeshRenderer))]
+    public class SkinnedMeshRendererEditor : Editor
+    {
+        private SkinnedMeshRenderer m_SkinnedMeshRenderer;
+        private string[] m_LayerNames;
+
+        private void OnEnable()
+        {
+            m_SkinnedMeshRenderer = target as SkinnedMeshRenderer;
+        }
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            if (m_LayerNames == null || m_LayerNames.Length != SortingLayer.layers.Length)
+            {
+                m_LayerNames = new string[SortingLayer.layers.Length];
+            }
+            for (int i = 0; i < m_LayerNames.Length; i++)
+            {
+                m_LayerNames[i] = SortingLayer.layers[i].name;
+            }
+
+            var layerValue = SortingLayer.GetLayerValueFromID(m_SkinnedMeshRenderer.sortingLayerID);
+            layerValue = EditorGUILayout.Popup("Sorting Layer", layerValue, m_LayerNames);
+
+            SortingLayer layer = SortingLayer.layers[layerValue];
+            m_SkinnedMeshRenderer.sortingLayerName = layer.name;
+            m_SkinnedMeshRenderer.sortingLayerID = layer.id;
+            m_SkinnedMeshRenderer.sortingOrder = EditorGUILayout.IntField("Order In Layer", m_SkinnedMeshRenderer.sortingOrder);
+
+            foreach (var t in targets)
+            {
+                if (t == target)
+                {
+                    continue;
+                }
+                var skinnedMeshRenderer = t as SkinnedMeshRenderer;
+                if (skinnedMeshRenderer != null)
+                {
+                    {
+                        skinnedMeshRenderer.sortingLayerName = m_SkinnedMeshRenderer.sortingLayerName;
+                        skinnedMeshRenderer.sortingLayerID = m_SkinnedMeshRenderer.sortingLayerID;
+                        skinnedMeshRenderer.sortingOrder = m_SkinnedMeshRenderer.sortingOrder;
+                    }
+                }
+            }
+        }
+    }
+}

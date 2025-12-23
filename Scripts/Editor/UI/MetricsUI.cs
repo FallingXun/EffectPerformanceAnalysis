@@ -9,6 +9,7 @@ namespace EffectPerformanceAnalysis
 {
     public class MetricsUI : IGUI
     {
+        private EffectConfigAsset m_EffectConfigAsset;
         private GameObject m_GameObject;
         private Transform m_Transform;
         private GameObject m_Prefab;
@@ -17,32 +18,37 @@ namespace EffectPerformanceAnalysis
         private Vector2 m_ScrollViewPos = Vector2.zero;
         private bool m_IsEffect = false;
         private bool m_IsVaild = false;
-        private int m_SortingOrderStart = Performance.SORTING_ORDER_INVAILD;
+        private int m_SortingOrderStart = Const.SORTING_ORDER_INVAILD;
 
-        private Dictionary<EPerformanceMetrics, MetricsItemUI> m_PerformanceMetricsDict = new Dictionary<EPerformanceMetrics, MetricsItemUI>();
+        private Dictionary<EMetrics, string> m_MetricsNameDict = new Dictionary<EMetrics, string>();
+        private Dictionary<EMetrics, bool> m_MetricsStateDict = new Dictionary<EMetrics, bool>();
 
+        private GUIStyle m_TitleStyle = null;
 
         public void Init(GameObject go)
         {
-            if (m_PerformanceMetricsDict.Count <= 0)
+            if (m_TitleStyle == null)
             {
-                m_PerformanceMetricsDict[EPerformanceMetrics.Id] = new MetricsItemUI(EPerformanceMetrics.Id, "���[�ظ�ֵ]", 100, PlayerPrefs.GetInt(EPerformanceMetrics.Id.ToString(), 1) > 0);
-                m_PerformanceMetricsDict[EPerformanceMetrics.Batch] = new MetricsItemUI(EPerformanceMetrics.Batch, "����", 30, PlayerPrefs.GetInt(EPerformanceMetrics.Batch.ToString(), 1) > 0);
-                m_PerformanceMetricsDict[EPerformanceMetrics.RendererObject] = new MetricsItemUI(EPerformanceMetrics.RendererObject, "Renderer����", 200, PlayerPrefs.GetInt(EPerformanceMetrics.RendererObject.ToString(), 1) > 0);
-                m_PerformanceMetricsDict[EPerformanceMetrics.RenderQueue] = new MetricsItemUI(EPerformanceMetrics.RenderQueue, "RenderQueue", 100, PlayerPrefs.GetInt(EPerformanceMetrics.RenderQueue.ToString(), 1) > 0);
-                m_PerformanceMetricsDict[EPerformanceMetrics.OrderInLayer] = new MetricsItemUI(EPerformanceMetrics.OrderInLayer, "OrderInLayer[�Ƽ�ֵ]", 150, PlayerPrefs.GetInt(EPerformanceMetrics.OrderInLayer.ToString(), 1) > 0);
-                m_PerformanceMetricsDict[EPerformanceMetrics.Materials] = new MetricsItemUI(EPerformanceMetrics.Materials, "������", 100, PlayerPrefs.GetInt(EPerformanceMetrics.Materials.ToString(), 1) > 0);
-                m_PerformanceMetricsDict[EPerformanceMetrics.MeshVertexCount] = new MetricsItemUI(EPerformanceMetrics.MeshVertexCount, "Mesh������", 100, PlayerPrefs.GetInt(EPerformanceMetrics.MeshVertexCount.ToString(), 1) > 0);
-                m_PerformanceMetricsDict[EPerformanceMetrics.MeshTriangleCount] = new MetricsItemUI(EPerformanceMetrics.MeshTriangleCount, "Mesh����", 100, PlayerPrefs.GetInt(EPerformanceMetrics.MeshTriangleCount.ToString(), 1) > 0);
-                m_PerformanceMetricsDict[EPerformanceMetrics.RenderVertexCount] = new MetricsItemUI(EPerformanceMetrics.RenderVertexCount, "��Ⱦ������", 100, PlayerPrefs.GetInt(EPerformanceMetrics.RenderVertexCount.ToString(), 1) > 0);
-                m_PerformanceMetricsDict[EPerformanceMetrics.RenderTriangleCount] = new MetricsItemUI(EPerformanceMetrics.RenderTriangleCount, "��Ⱦ����", 100, PlayerPrefs.GetInt(EPerformanceMetrics.RenderTriangleCount.ToString(), 1) > 0);
-                m_PerformanceMetricsDict[EPerformanceMetrics.TotalPassCount] = new MetricsItemUI(EPerformanceMetrics.TotalPassCount, "Pass����", 100, PlayerPrefs.GetInt(EPerformanceMetrics.TotalPassCount.ToString(), 1) > 0);
-                m_PerformanceMetricsDict[EPerformanceMetrics.TextureCount] = new MetricsItemUI(EPerformanceMetrics.TextureCount, "��������", 100, PlayerPrefs.GetInt(EPerformanceMetrics.TextureCount.ToString(), 1) > 0);
-                m_PerformanceMetricsDict[EPerformanceMetrics.TextureSize] = new MetricsItemUI(EPerformanceMetrics.TextureSize, "�����ߴ�", 100, PlayerPrefs.GetInt(EPerformanceMetrics.TextureSize.ToString(), 1) > 0);
-                m_PerformanceMetricsDict[EPerformanceMetrics.TextureMaxSize] = new MetricsItemUI(EPerformanceMetrics.TextureMaxSize, "�������ߴ�[��-��]", 150, PlayerPrefs.GetInt(EPerformanceMetrics.TextureMaxSize.ToString(), 1) > 0);
-                m_PerformanceMetricsDict[EPerformanceMetrics.TextureMemory] = new MetricsItemUI(EPerformanceMetrics.TextureMemory, "������С", 100, PlayerPrefs.GetInt(EPerformanceMetrics.TextureMemory.ToString(), 1) > 0);
-                m_PerformanceMetricsDict[EPerformanceMetrics.ParticleMaxCount] = new MetricsItemUI(EPerformanceMetrics.ParticleMaxCount, "���������", 100, PlayerPrefs.GetInt(EPerformanceMetrics.ParticleMaxCount.ToString(), 1) > 0);
+                m_TitleStyle = new GUIStyle();
+                m_TitleStyle.alignment = TextAnchor.MiddleCenter;
             }
+
+            m_MetricsNameDict.Clear();
+            m_MetricsStateDict.Clear();
+            foreach (EMetrics metricsType in Enum.GetValues(typeof(EMetrics)))
+            {
+                var attributes = metricsType.GetType().GetField(metricsType.ToString()).GetCustomAttributes(false);
+                foreach (var attribute in attributes)
+                {
+                    if (attribute is DisplayAttribute display)
+                    {
+                        m_MetricsNameDict[metricsType] = display.name;
+                    }
+                }
+                m_MetricsStateDict[metricsType] = PlayerPrefs.GetInt(metricsType.ToString(), 1) > 0;
+
+            }
+
             if (m_GameObject == go)
             {
                 return;
@@ -54,33 +60,7 @@ namespace EffectPerformanceAnalysis
             m_GameObject = go;
             m_Transform = go.transform;
 
-            var assetPath = AssetDatabase.GetAssetPath(go);
-            if (string.IsNullOrEmpty(assetPath))
-            {
-                var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetPrefabStage(go);
-                if (prefabStage != null)
-                {
-                    if (prefabStage.prefabContentsRoot == go)
-                    {
-                        assetPath = prefabStage.assetPath;
-                    }
-                }
-                else
-                {
-                    if (PrefabUtility.GetNearestPrefabInstanceRoot(go) == go)
-                    {
-                        assetPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(go);
-                    }
-                }
-            }
-            if (string.IsNullOrEmpty(assetPath) == false)
-            {
-                m_Prefab = AssetDatabase.LoadAssetAtPath<GameObject>(assetPath);
-            }
-            else
-            {
-                m_Prefab = null;
-            }
+            m_Prefab = Utils.GetPrefab(go);
             if (m_Prefab == null)
             {
                 m_IsVaild = false;
@@ -89,7 +69,16 @@ namespace EffectPerformanceAnalysis
             {
                 m_IsVaild = true;
             }
-            if (EffectMarkAsset.instance && EffectMarkAsset.instance.IsEffect(m_Prefab))
+
+            if(m_EffectConfigAsset == null)
+            {
+                m_EffectConfigAsset = AssetDatabase.LoadAssetAtPath<EffectConfigAsset>(Const.EFFECT_CONFIG_PATH);
+                if (m_EffectConfigAsset != null)
+                {
+                    m_EffectConfigAsset.Init();
+                }
+            }
+            if (m_EffectConfigAsset != null && m_EffectConfigAsset.IsEffect(m_Prefab))
             {
                 m_IsEffect = true;
             }
@@ -112,35 +101,35 @@ namespace EffectPerformanceAnalysis
             {
                 return;
             }
-            EditorGUILayout.LabelField("����Ч������", GUILayout.Width(100), GUILayout.Height(20));
+            EditorGUILayout.LabelField(Const.METRICS_UI_TITLE, GUILayout.Width(100), GUILayout.Height(20));
 
-            m_SortingOrderStart = EffectMarkAsset.instance.GetSortingOrderStart(m_Prefab);
+            m_SortingOrderStart = m_EffectConfigAsset.GetSortingOrderStart(m_Prefab);
             GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField("OrderInLayer ��ʼֵ", GUILayout.Width(150));
+            EditorGUILayout.LabelField(Const.METRICS_UI_SORTING_ORDER_START, GUILayout.Width(150));
             m_SortingOrderStart = EditorGUILayout.IntField(m_SortingOrderStart, GUILayout.Width(100));
             GUILayout.FlexibleSpace();
 
-            MetricsData performanceData = Performance.Analyze(m_GameObject, m_SortingOrderStart);
+            RootNode rootNode = Performance.Analyze(m_GameObject, m_SortingOrderStart);
 
-            if (GUILayout.Button("����", GUILayout.Width(50)))
+            if (GUILayout.Button(Const.METRICS_UI_RESET, GUILayout.Width(50)))
             {
-                if (performanceData.nodeDataList != null)
+                if (rootNode.count > 0)
                 {
-                    for (int i = 0; i < performanceData.nodeDataList.Count; i++)
+                    for (int i = 0; i < rootNode.count; i++)
                     {
-                        performanceData.nodeDataList[i].renderer.sortingOrder = performanceData.nodeDataList[i].correctSortingOrder - m_SortingOrderStart;
+                        rootNode[i][0].renderer.sortingOrder = rootNode[i].sortingOrderRecommend - m_SortingOrderStart;
                     }
                     EditorUtility.SetDirty(m_GameObject);
                 }
             }
 
-            if (GUILayout.Button("����", GUILayout.Width(50)))
+            if (GUILayout.Button(Const.METRICS_UI_UPDATE, GUILayout.Width(50)))
             {
-                if (performanceData.nodeDataList != null)
+                if (rootNode.count > 0)
                 {
-                    for (int i = 0; i < performanceData.nodeDataList.Count; i++)
+                    for (int i = 0; i < rootNode.count; i++)
                     {
-                        performanceData.nodeDataList[i].renderer.sortingOrder = performanceData.nodeDataList[i].correctSortingOrder;
+                        rootNode[i][0].renderer.sortingOrder = rootNode[i].sortingOrderRecommend;
                     }
                     EditorUtility.SetDirty(m_GameObject);
                 }
@@ -148,208 +137,151 @@ namespace EffectPerformanceAnalysis
             GUILayout.EndHorizontal();
 
             EditorGUILayout.Space();
-            GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(string.Format("������:{0}", performanceData.totalBatchCount), GUILayout.Width(200));
-            EditorGUILayout.LabelField(string.Format("����������:{0}", performanceData.totalMaterialCount), GUILayout.Width(200));
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(string.Format("Mesh�ܶ�����:{0}", performanceData.totalMeshVertexCount), GUILayout.Width(200));
-            EditorGUILayout.LabelField(string.Format("Mesh������:{0}", performanceData.totalMeshTriangleCount), GUILayout.Width(200));
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(string.Format("��Ⱦ�ܶ�����:{0}", performanceData.totalRenderVertexCount), GUILayout.Width(200));
-            EditorGUILayout.LabelField(string.Format("��Ⱦ������:{0}", performanceData.totalRenderTriangleCount), GUILayout.Width(200));
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(string.Format("���������:{0}", performanceData.particleMaxCount), GUILayout.Width(200));
-            EditorGUILayout.LabelField(string.Format("��������:{0}", performanceData.totalTextureCount), GUILayout.Width(200));
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(string.Format("�������ߴ�:{0}x{1}", (int)Math.Sqrt(performanceData.totalTextureSize), (int)Math.Sqrt(performanceData.totalTextureSize)), GUILayout.Width(200));
-            EditorGUILayout.LabelField(string.Format("�������ߴ�[��-��]:{0}-{1}", performanceData.totalTextureMaxWidth, performanceData.totalTextureMaxHeight), GUILayout.Width(200));
-            GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(string.Format("�������ڴ�:{0}", Utils.GetTextureSizeFormat(performanceData.totalTextureMemory)), GUILayout.Width(200));
-            GUILayout.EndHorizontal();
-            EditorGUILayout.Space();
 
-            float totalWidth = 50;
             GUILayout.BeginHorizontal();
-            for (int i = 0; i < m_PerformanceMetricsDict.Count; i++)
+            foreach (EMetrics metricsType in Enum.GetValues(typeof(EMetrics)))
             {
-                var column = m_PerformanceMetricsDict[(EPerformanceMetrics)i];
-                if (i % 4 == 0)
+                if ((int)metricsType % 2 == 0)
                 {
                     GUILayout.EndHorizontal();
                     GUILayout.BeginHorizontal();
                 }
-                bool show = column.show;
-                column.show = EditorGUILayout.Toggle(column.show, GUILayout.Width(10), GUILayout.Height(23));
-                if (show != column.show)
+                var name = m_MetricsNameDict[metricsType];
+                var value = GetMetricsValue(rootNode, metricsType);
+                var state = m_MetricsStateDict[metricsType];
+                m_MetricsStateDict[metricsType] = EditorGUILayout.ToggleLeft(string.Format("{0}:{1}", name, value), state, GUILayout.Width(200));
+                if (state != m_MetricsStateDict[metricsType])
                 {
-                    PlayerPrefs.SetInt(column.performanceMetrics.ToString(), column.show ? 1 : 0);
-                }
-                EditorGUILayout.LabelField(" " + column.title, GUILayout.Width(150), GUILayout.Height(20));
-                if (column.show)
-                {
-                    totalWidth += column.width;
+                    PlayerPrefs.SetInt(metricsType.ToString(), m_MetricsStateDict[metricsType] ? 1 : 0);
                 }
             }
             GUILayout.EndHorizontal();
 
-            EditorGUILayout.LabelField("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-            if (performanceData.nodeDataList != null && performanceData.nodeDataList.Count > 0)
+            EditorGUILayout.Space();
+
+            EditorGUILayout.LabelField(Const.METRICS_UI_LINE);
+            if (rootNode.count > 0)
             {
                 var pos1 = new Vector2(m_ScrollViewPos.x, m_ScrollViewTitlePos.y);
                 m_ScrollViewTitlePos = GUILayout.BeginScrollView(pos1);
                 GUILayout.BeginHorizontal();
-                foreach (EPerformanceMetrics performanceMetrics in Enum.GetValues(typeof(EPerformanceMetrics)))
+                foreach (EMetrics metricsType in Enum.GetValues(typeof(EMetrics)))
                 {
-                    var column = m_PerformanceMetricsDict[performanceMetrics];
-                    if (column.show == false)
+                    if (m_MetricsStateDict[metricsType] == false)
                     {
                         continue;
                     }
-                    var width = column.width;
-                    if (performanceMetrics == EPerformanceMetrics.Materials)
-                    {
-                        width *= performanceData.materialMaxCount;
-                    }
-                    EditorGUILayout.LabelField(" " + column.title, GUILayout.Width(width));
+                    EditorGUILayout.LabelField(m_MetricsNameDict[metricsType], m_TitleStyle, GUILayout.Width(150));
                 }
                 GUILayout.EndHorizontal();
                 GUILayout.EndScrollView();
                 var pos2 = new Vector2(m_ScrollViewTitlePos.x, m_ScrollViewPos.y);
-                m_ScrollViewPos = GUILayout.BeginScrollView(pos2, GUILayout.Height(Math.Min(400, performanceData.nodeDataList.Count * 20 + 20)));
-                for (int i = 0; i < performanceData.nodeDataList.Count; i++)
+                m_ScrollViewPos = GUILayout.BeginScrollView(pos2, GUILayout.Height(Math.Min(400, rootNode.count * 20 + 20)));
+                for (int i = 0; i < rootNode.count; i++)
                 {
                     GUILayout.BeginHorizontal();
-                    foreach (EPerformanceMetrics performanceMetrics in Enum.GetValues(typeof(EPerformanceMetrics)))
+                    foreach (EMetrics metricsType in Enum.GetValues(typeof(EMetrics)))
                     {
-                        var column = m_PerformanceMetricsDict[performanceMetrics];
-                        if (column.show == false)
+                        if (m_MetricsStateDict[metricsType] == false)
                         {
                             continue;
                         }
-                        switch (performanceMetrics)
-                        {
-                            case EPerformanceMetrics.Id:
-                                {
-                                    if (performanceData.nodeDataList[i].repeatId > 0)
-                                    {
-                                        EditorGUILayout.TextField(string.Format("{0}[{1}]", performanceData.nodeDataList[i].id, performanceData.nodeDataList[i].repeatId), GUILayout.Width(column.width));
-                                    }
-                                    else
-                                    {
-                                        EditorGUILayout.IntField(performanceData.nodeDataList[i].id, GUILayout.Width(column.width));
-                                    }
-                                }
-                                break;
-                            case EPerformanceMetrics.RendererObject:
-                                {
-                                    EditorGUILayout.ObjectField(performanceData.nodeDataList[i].renderer, typeof(Renderer), GUILayout.Width(column.width));
-                                }
-                                break;
-                            case EPerformanceMetrics.RenderQueue:
-                                {
-                                    EditorGUILayout.IntField(performanceData.nodeDataList[i].renderQueue, GUILayout.Width(column.width));
-                                }
-                                break;
-                            case EPerformanceMetrics.OrderInLayer:
-                                {
-                                    if (performanceData.nodeDataList[i].sortingOrder == performanceData.nodeDataList[i].correctSortingOrder)
-                                    {
-                                        EditorGUILayout.IntField(performanceData.nodeDataList[i].sortingOrder, GUILayout.Width(column.width));
-                                    }
-                                    else
-                                    {
-                                        EditorGUILayout.TextField(string.Format("{0}[{1}]", performanceData.nodeDataList[i].sortingOrder, performanceData.nodeDataList[i].correctSortingOrder), GUILayout.Width(column.width));
-                                    }
-                                }
-                                break;
-                            case EPerformanceMetrics.Materials:
-                                {
-                                    for (int j = 0; j < performanceData.materialMaxCount; j++)
-                                    {
-                                        Material material = null;
-                                        if (j < performanceData.nodeDataList[i].renderer.sharedMaterials.Length)
-                                        {
-                                            material = performanceData.nodeDataList[i].renderer.sharedMaterials[j];
-                                        }
-                                        EditorGUILayout.ObjectField(material, typeof(Material), GUILayout.Width(100));
-                                    }
-                                }
-                                break;
-                            case EPerformanceMetrics.Batch:
-                                {
-                                    EditorGUILayout.TextField(performanceData.nodeDataList[i].batch ? "��" : "��", GUILayout.Width(column.width));
-                                }
-                                break;
-                            case EPerformanceMetrics.MeshVertexCount:
-                                {
-                                    EditorGUILayout.IntField(performanceData.nodeDataList[i].meshVertexCount, GUILayout.Width(column.width));
-                                }
-                                break;
-                            case EPerformanceMetrics.MeshTriangleCount:
-                                {
-                                    EditorGUILayout.IntField(performanceData.nodeDataList[i].meshTriangleCount, GUILayout.Width(column.width));
-                                }
-                                break;
-                            case EPerformanceMetrics.RenderVertexCount:
-                                {
-                                    EditorGUILayout.IntField(performanceData.nodeDataList[i].renderVertexCount, GUILayout.Width(column.width));
-                                }
-                                break;
-                            case EPerformanceMetrics.RenderTriangleCount:
-                                {
-                                    EditorGUILayout.IntField(performanceData.nodeDataList[i].renderTriangleCount, GUILayout.Width(column.width));
-                                }
-                                break;
-                            case EPerformanceMetrics.TotalPassCount:
-                                {
-                                    EditorGUILayout.IntField(performanceData.nodeDataList[i].totalPassCount, GUILayout.Width(column.width));
-                                }
-                                break;
-                            case EPerformanceMetrics.TextureCount:
-                                {
-                                    EditorGUILayout.IntField(performanceData.nodeDataList[i].textureCount, GUILayout.Width(column.width));
-                                }
-                                break;
-                            case EPerformanceMetrics.TextureSize:
-                                {
-                                    var size = (int)Math.Sqrt(performanceData.nodeDataList[i].textureSize);
-                                    EditorGUILayout.TextField(string.Format("{0}x{1}", size, size), GUILayout.Width(column.width));
-                                }
-                                break;
-                            case EPerformanceMetrics.TextureMaxSize:
-                                {
-                                    EditorGUILayout.TextField(string.Format("{0}-{1}", performanceData.nodeDataList[i].textureMaxWidth, performanceData.nodeDataList[i].textureMaxHeight), GUILayout.Width(column.width));
-                                }
-                                break;
-                            case EPerformanceMetrics.TextureMemory:
-                                {
-                                    EditorGUILayout.TextField(Utils.GetTextureSizeFormat(performanceData.nodeDataList[i].textureMemory), GUILayout.Width(column.width));
-                                }
-                                break;
-                            case EPerformanceMetrics.ParticleMaxCount:
-                                {
-                                    var count = 0;
-                                    var ps = performanceData.nodeDataList[i].renderer.GetComponent<ParticleSystem>();
-                                    if (ps != null)
-                                    {
-                                        count = ps.main.maxParticles;
-                                    }
-                                    EditorGUILayout.IntField(count, GUILayout.Width(column.width));
-                                }
-                                break;
-                        }
+                        var value = GetMetricsValue(rootNode[i], metricsType);
+                        EditorGUILayout.TextField(value, m_TitleStyle, GUILayout.Width(150));
                     }
 
                     GUILayout.EndHorizontal();
                 }
                 GUILayout.EndScrollView();
-            }
+             }
         }
+
+        public string GetMetricsValue(IMetrics metrics, EMetrics metricsType)
+        {
+            string value = "";
+            switch (metricsType)
+            {
+                case EMetrics.OrderInLayer:
+                    {
+                        if (metrics is RenderNode renderNode)
+                        {
+                            value = string.Format("{0}[{1}]", renderNode.sortingOrder, renderNode.sortingOrderRecommend);
+                        }
+                        else
+                        {
+                            value = metrics.sortingOrder.ToString();
+                        }
+                    }
+                    break;
+                case EMetrics.RenderQueue:
+                    {
+                        value = metrics.renderQueue.ToString();
+                    }
+                    break;
+                case EMetrics.MeshVertexCount:
+                    {
+                        value = metrics.meshVertexCount.ToString();
+                    }
+                    break;
+                case EMetrics.MeshVertexAttributes:
+                    {
+                        value = metrics.meshVertexAttributeCount.ToString();
+                    }
+                    break;
+                case EMetrics.MeshTriangleCount:
+                    {
+                        value = metrics.meshTriangleCount.ToString();
+                    }
+                    break;
+                case EMetrics.RenderVertexCount:
+                    {
+                        value = metrics.renderVertexCount.ToString();
+                    }
+                    break;
+                case EMetrics.RenderTriangleCount:
+                    {
+                        value = metrics.renderTriangleCount.ToString();
+                    }
+                    break;
+                case EMetrics.PassCount:
+                    {
+                        value = metrics.passCount.ToString();
+                    }
+                    break;
+                case EMetrics.TextureCount:
+                    {
+                        value = metrics.textureCount.ToString();
+                    }
+                    break;
+                case EMetrics.TextureSize:
+                    {
+                        value = TextureUtils.GetTextureSizeFormat(metrics.textureSize);
+                    }
+                    break;
+                case EMetrics.TextureMaxWidth:
+                    {
+                        value = metrics.textureMaxWidth.ToString();
+                    }
+                    break;
+                case EMetrics.TextureMaxHeight:
+                    {
+                        value = metrics.textureMaxHeight.ToString();
+                    }
+                    break;
+                case EMetrics.TextureMemory:
+                    {
+                        value = TextureUtils.GetTextureMemoryFormat(metrics.textureMemory);
+                    }
+                    break;
+                case EMetrics.ParticleMaxCount:
+                    {
+                        value = metrics.particleMaxCount.ToString();
+                    }
+                    break;
+            }
+            return value;
+        }
+
     }
 }
 

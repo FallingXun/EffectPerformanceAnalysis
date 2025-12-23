@@ -1,0 +1,29 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace EffectPerformanceAnalysis
+{
+    public class CustomEffectConfigAsset : EffectConfigAsset
+    {
+        public override void Init()
+        {
+            base.Init();
+        }
+
+        public override bool IsEffect(GameObject go)
+        {
+            return base.IsEffect(go);
+        }
+
+        public override void Serialize()
+        {
+            base.Serialize();
+        }
+
+        public override void Desrialize()
+        {
+            base.Desrialize();
+        }
+    }
+}

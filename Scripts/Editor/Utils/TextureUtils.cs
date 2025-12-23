@@ -7,11 +7,11 @@ using UnityEngine;
 namespace EffectPerformanceAnalysis
 {
     public static class TextureUtils
-    { 
+    {
         private static MethodInfo m_GetStorageMemorySizeLong = null;
         private static object[] m_ObjectParams = new object[1];
 
-        public static string GetAllTexturesizeFormat(long value)
+        public static string GetTextureMemoryFormat(long value)
         {
             string result = "";
             if (value > 1024 * 1024 * 1024)
@@ -50,7 +50,17 @@ namespace EffectPerformanceAnalysis
             return memory;
         }
 
+        public static string GetTextureSizeFormat(int size)
+        {
+            var sqrt = (int)Mathf.Sqrt(size);
+            return string.Format("{0}x{1}", sqrt, sqrt);
+        }
 
+        public static int GetTextureSize(Texture texture)
+        {
+            var size = texture.width * texture.height;
+            return size;
+        }
 
         public static void GetAllTextures(List<Texture> textureList, Material material)
         {
@@ -78,65 +88,12 @@ namespace EffectPerformanceAnalysis
         }
 
 
-        public static int GetAllTexturesCount(Material material)
-        {
-            var count = 0;
-            var textureList = Pools.Get<List<Texture>>();
-            GetAllTextures(textureList, material);
-            count = textureList.Count;
-            Pools.Release(textureList);
-            return count;
-        }
 
-        public static int GetAllTexturesSize(Material material)
-        {
-            var size = 0;
-            var textureList = Pools.Get<List<Texture>>();
-            GetAllTextures(textureList, material);
-            foreach (var texture in textureList)
-            {
-                size += texture.width * texture.height;
-            }
-            Pools.Release(textureList);
-            return size;
-        }
 
-        public static int GetAllTexturesMaxWidth(Material material)
-        {
-            var maxWidth = 0;
-            var textureList = Pools.Get<List<Texture>>();
-            GetAllTextures(textureList, material);
-            foreach (var texture in textureList)
-            {
-                maxWidth = Mathf.Max(maxWidth, texture.width);
-            }
-            Pools.Release(textureList);
-            return maxWidth;
-        }
-
-        public static int GetAllTexturesMaxHeight(Material material)
-        {
-            var maxHeight = 0;
-            var textureList = Pools.Get<List<Texture>>();
-            GetAllTextures(textureList, material);
-            foreach (var texture in textureList)
-            {
-                maxHeight = Mathf.Max(maxHeight, texture.width);
-            }
-            Pools.Release(textureList);
-            return maxHeight;
-        }
-
-        public static long GetAllTexturesMemory(Material material)
+        public static long GetAllTexturesMemory(Texture texture)
         {
             var memory = 0L;
-            var textureList = Pools.Get<List<Texture>>();
-            GetAllTextures(textureList, material);
-            foreach (var texture in textureList)
-            {
-                memory += GetTextureMemory(texture);
-            }
-            Pools.Release(textureList);
+            memory += GetTextureMemory(texture);
             return memory;
         }
     }

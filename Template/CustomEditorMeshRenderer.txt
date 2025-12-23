@@ -1,0 +1,59 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+
+namespace EffectPerformanceAnalysis
+{
+    [CanEditMultipleObjects]
+    [CustomEditor(typeof(MeshRenderer))]
+    public class MeshRendererEditor : Editor
+    {
+        private MeshRenderer m_MeshRender;
+        private string[] m_LayerNames;
+
+        private void OnEnable()
+        {
+            m_MeshRender = target as MeshRenderer;
+        }
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            if (m_LayerNames == null || m_LayerNames.Length != SortingLayer.layers.Length)
+            {
+                m_LayerNames = new string[SortingLayer.layers.Length];
+            }
+            for (int i = 0; i < m_LayerNames.Length; i++)
+            {
+                m_LayerNames[i] = SortingLayer.layers[i].name;
+            }
+
+            var layerValue = SortingLayer.GetLayerValueFromID(m_MeshRender.sortingLayerID);
+            layerValue = EditorGUILayout.Popup("Sorting Layer", layerValue, m_LayerNames);
+
+            SortingLayer layer = SortingLayer.layers[layerValue];
+            m_MeshRender.sortingLayerName = layer.name;
+            m_MeshRender.sortingLayerID = layer.id;
+            m_MeshRender.sortingOrder = EditorGUILayout.IntField("Order In Layer", m_MeshRender.sortingOrder);
+
+            foreach (var t in targets)
+            {
+                if (t == target)
+                {
+                    continue;
+                }
+                var meshRender = t as MeshRenderer;
+                if (meshRender != null)
+                {
+                    {
+                        meshRender.sortingLayerName = m_MeshRender.sortingLayerName;
+                        meshRender.sortingLayerID = m_MeshRender.sortingLayerID;
+                        meshRender.sortingOrder = m_MeshRender.sortingOrder;
+                    }
+                }
+            }
+        }
+    }
+}

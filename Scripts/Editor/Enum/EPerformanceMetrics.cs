@@ -1,46 +1,34 @@
 namespace EffectPerformanceAnalysis
 {
-    public enum EPerformanceMetrics
+    public enum EMetrics
     {
-        [Display("序号")]
-        Id = 0,
-        [Display("Renderer对象")]
-        RendererObject,
-        [Display("RenderQueue")]
-        RenderQueue,
-        [Display("OrderInLayer")]
+        [Display(Const.METRICS_NAME_SORTING_ORDER)]
         OrderInLayer,
-        [Display("材质球")]
-        MaterialObjects,
-        [Display("材质组")]
-        MaterialGroup,
-        [Display("合批")]
-        Batch,
-        [Display("Mesh顶点数")]
-        MeshVertices,
-        [Display("Mesh顶点属性数")]
-        MeshVertexAttributes,
-        [Display("Mesh面数")]
-        MeshTriangles,
-        [Display("渲染顶点数")]
-        RenderVertices,
-        [Display("渲染面数")]
-        RenderTriangles,
-        [Display("Pass数量")]
-        PassCount,
-        [Display("纹理数量")]
-        TextureCount,
-        [Display("纹理大小")]
-        TextureSize,
-
-        Materials,
+        [Display(Const.METRICS_NAME_RENDER_QUEUE)]
+        RenderQueue,
+        [Display(Const.METRICS_NAME_MESH_VERTEX_COUNT)]
         MeshVertexCount,
+        [Display(Const.METRICS_NAME_MESH_VERTEX_ATTRIBUTES)]
+        MeshVertexAttributes,
+        [Display(Const.METRICS_NAME_MESH_TRIANGLE_COUNT)]
         MeshTriangleCount,
+        [Display(Const.METRICS_NAME_RENDER_VERTEX_COUNT)]
         RenderVertexCount,
+        [Display(Const.METRICS_NAME_RENDER_TRIANGLE_COUNT)]
         RenderTriangleCount,
-        TotalPassCount,
-        TextureMaxSize,
+        [Display(Const.METRICS_NAME_PASS_COUNT)]
+        PassCount,
+        [Display(Const.METRICS_NAME_TEXTURE_COUNT)]
+        TextureCount,
+        [Display(Const.METRICS_NAME_TEXTURE_SIZE)]
+        TextureSize,
+        [Display(Const.METRICS_NAME_TEXTURE_MAX_WIDTH)]
+        TextureMaxWidth,
+        [Display(Const.METRICS_NAME_TEXTURE_MAX_HEIGHT)]
+        TextureMaxHeight,
+        [Display(Const.METRICS_NAME_TEXTURE_MEMORY)]
         TextureMemory,
+        [Display(Const.METRICS_NAME_PARTICILE_MAX_COUNT)]
         ParticleMaxCount,
     }
 }

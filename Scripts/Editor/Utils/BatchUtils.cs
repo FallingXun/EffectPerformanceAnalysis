@@ -39,6 +39,7 @@ namespace EffectPerformanceAnalysis
             }
         }
 
+
         public static bool Batch(RenderUnitData source, RenderUnitData target)
         {
             var batchType1 = GetBatchType(source.renderer);
@@ -78,11 +79,6 @@ namespace EffectPerformanceAnalysis
                         return false;
                     }
             }
-        }
-
-        public static bool Batch(RenderNode source, RenderNode target)
-        {
-            return false;
         }
     }
 

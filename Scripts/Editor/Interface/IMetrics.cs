@@ -6,9 +6,9 @@ namespace EffectPerformanceAnalysis
 {
     public interface IMetrics
     {
-        int renderQueue { get; }
-
         int sortingOrder { get; }
+
+        int renderQueue { get; }
 
         int meshVertexCount { get; }
 
@@ -20,8 +20,6 @@ namespace EffectPerformanceAnalysis
 
         int renderTriangleCount { get; }
 
-        int batchCount { get; }
-
         int passCount { get; }
 
         int textureCount { get; }
@@ -30,7 +28,11 @@ namespace EffectPerformanceAnalysis
 
         int textureMaxWidth { get; }
 
+        int textureMaxHeight { get; }
+
         long textureMemory { get; }
+
+        int particleMaxCount { get; }
     }
 
 }

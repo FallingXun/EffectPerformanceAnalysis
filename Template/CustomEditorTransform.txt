@@ -1,0 +1,40 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+using System;
+
+namespace EffectPerformanceAnalysis
+{
+    [CustomEditor(typeof(Transform))]
+    public class TransformEditor : Editor
+    {
+        private Transform m_Transform;
+
+        private Vector2 m_ScrollView = Vector2.zero;
+        private static IGUI m_GUI = new MetricsUI();
+      
+        private void OnEnable()
+        {
+            m_Transform = target as Transform;
+
+            m_GUI.Init(m_Transform.gameObject);
+        }
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            try
+            {
+                m_GUI.OnInspectorGUI();
+            }
+            catch (Exception e)
+            {
+                m_ScrollView = GUILayout.BeginScrollView(m_ScrollView);
+                GUILayout.Label(e.ToString());
+                GUILayout.EndScrollView();
+            }
+        }
+    }
+}

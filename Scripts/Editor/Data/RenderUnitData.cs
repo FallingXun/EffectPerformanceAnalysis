@@ -7,28 +7,19 @@ namespace EffectPerformanceAnalysis
     public struct RenderUnitData
     {
         public Material material;
-        public Mesh mesh;
-        public Shader shader;
-        public EComponentType componentType;
         public Renderer renderer;
+        public Shader shader;
+        public Mesh mesh;
+        public int sharedMaterialIndex;
 
-        public RenderUnitData(Material material, Renderer renderer)
+
+        public RenderUnitData(Material material, Renderer renderer, int sharedMaterialIndex)
         {
             this.material = material;
             this.renderer = renderer;
+            this.sharedMaterialIndex = sharedMaterialIndex;
             this.shader = ShaderUtils.GetShader(material);
-            this.componentType = RendererUtils.GetComponentType(renderer);
             this.mesh = MeshUtils.GetMesh(renderer);
-        }
-
-        public int CompareTo(RenderUnitData target)
-        {
-            return ComparerUtils.Compare(this, target);
-        }
-
-        public bool CanBatch(RenderUnitData target)
-        {
-            return BatchUtils.Batch(this, target);
         }
     }
 }
