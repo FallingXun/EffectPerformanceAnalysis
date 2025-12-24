@@ -107,7 +107,7 @@ namespace EffectPerformanceAnalysis
         private static int MaterialInstanceIdComparer(RenderUnitData source, RenderUnitData target)
         {
             var materialInstanceId1 = MaterialUtils.GetInstanceId(source.material);
-            var materialInstanceId2 = MaterialUtils.GetShaderKeywords(target.material);
+            var materialInstanceId2 = MaterialUtils.GetInstanceId(target.material);
             return materialInstanceId1.CompareTo(materialInstanceId2);
         }
 

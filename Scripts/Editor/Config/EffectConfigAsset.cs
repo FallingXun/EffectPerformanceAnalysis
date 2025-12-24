@@ -73,10 +73,7 @@ namespace EffectPerformanceAnalysis
             }
         }
 
-        public virtual void CollectAllEffect()
-        {
-            throw new Exception("请重写 EffectConfigAsset.CollectAllEffect 方法，收集所有特效预制体，为每个特效分配 id，通过 AddEffect 方法加入到配置中，最后通过 Save 方法保存配置！");
-        }
+        public abstract void CollectAllEffects(Dictionary<int, GameObject> allEffectsDict);
 
         public void AddEffect(GameObject go, int id)
         {

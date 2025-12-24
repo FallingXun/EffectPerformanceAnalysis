@@ -95,7 +95,7 @@ namespace EffectPerformanceAnalysis
                     {
                         return DynamicBatch(source, target);
                     }
-                case EBatchType.SBPBatch:
+                case EBatchType.SRPBatch:
                     {
                         return SRPBatch(source, target);
                     }

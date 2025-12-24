@@ -4,6 +4,6 @@ namespace EffectPerformanceAnalysis
     {
         None = 0,
         DynamicBatch,
-        SBPBatch,
+        SRPBatch,
     }
 }

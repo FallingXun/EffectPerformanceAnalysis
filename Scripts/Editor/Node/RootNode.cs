@@ -123,7 +123,7 @@ namespace EffectPerformanceAnalysis
                 meshTriangleCount += m_RenderNodeList[i].meshTriangleCount;
                 renderVertexCount += m_RenderNodeList[i].renderVertexCount;
                 renderTriangleCount += m_RenderNodeList[i].renderTriangleCount;
-                particleMaxCount = Mathf.Max(particleMaxCount, m_RenderNodeList[i].particleMaxCount);
+                particleMaxCount += m_RenderNodeList[i].particleMaxCount;
                 if (i < 1)
                 {
                     sortingOrder = m_RenderNodeList[i].sortingOrder;
@@ -190,6 +190,7 @@ namespace EffectPerformanceAnalysis
                 {
                     m_RenderNodeList[i][0].renderer.sortingOrder = m_RenderNodeList[i].sortingOrderRecommend;
                 }
+
                 EditorUtility.SetDirty(m_Root.gameObject);
             }
         }

@@ -16,7 +16,7 @@ namespace EffectPerformanceAnalysis
                     {
                         if (Utils.UsingSRP())
                         {
-                            return EBatchType.SBPBatch;
+                            return EBatchType.SRPBatch;
                         }
                         return EBatchType.None;
                     }
@@ -24,7 +24,7 @@ namespace EffectPerformanceAnalysis
                     {
                         if (Utils.UsingSRP())
                         {
-                            return EBatchType.SBPBatch;
+                            return EBatchType.SRPBatch;
                         }
                         return EBatchType.DynamicBatch;
                     }
@@ -52,6 +52,10 @@ namespace EffectPerformanceAnalysis
             {
                 case EBatchType.DynamicBatch:
                     {
+                        if(RendererUtils.DynamicBatch(source.renderer,target.renderer) == false)
+                        {
+                            return false;
+                        }   
                         if (MaterialUtils.DynamicBatch(source.material, target.material) == false)
                         {
                             return false;
@@ -62,8 +66,12 @@ namespace EffectPerformanceAnalysis
                         }
                         return true;
                     }
-                case EBatchType.SBPBatch:
+                case EBatchType.SRPBatch:
                     {
+                        if (RendererUtils.SRPBatch(source.renderer, target.renderer) == false)
+                        {
+                            return false;
+                        }
                         if (MaterialUtils.SRPBatch(source.material, target.material) == false)
                         {
                             return false;

@@ -26,9 +26,9 @@ namespace EffectPerformanceAnalysis
             base.Desrialize();
         }
 
-        public override void CollectAllEffect()
+        public override void CollectAllEffects(Dictionary<int, GameObject> allEffectsDict)
         {
-            base.CollectAllEffect()
+            
         }
     }
 }

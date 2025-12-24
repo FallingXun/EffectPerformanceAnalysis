@@ -19,10 +19,10 @@ namespace EffectPerformanceAnalysis
 
         private const string GROUP_DATA = EFFECT_PERFORMANCE_ANALYSIS + "Data";
         private const string DATA_CREATE_EFFECT_CONFIG_ASSET = EFFECT_PERFORMANCE_ANALYSIS + "Create Effect Config Asset";
-        private const string DATA_COLLECT_ALL_EFFECT = EFFECT_PERFORMANCE_ANALYSIS + "Collect All Effects";
+        private const string DATA_COLLECT_ALL_EFFECTS = EFFECT_PERFORMANCE_ANALYSIS + "Collect All Effects";
 
         private const string GROUP_OTHER = EFFECT_PERFORMANCE_ANALYSIS + "Other";
-        private const string OTHER_UPDATE_ALL_EFFECT = EFFECT_PERFORMANCE_ANALYSIS + "Update All Effects 's Order In Layer";
+        private const string OTHER_UPDATE_ALL_EFFECTS = EFFECT_PERFORMANCE_ANALYSIS + "Update All Effects 's Order In Layer";
 
 
         [MenuItem(GROUP_SCRIPTS, false, 1)]
@@ -98,7 +98,7 @@ namespace EffectPerformanceAnalysis
         }
 
 
-        [MenuItem(DATA_COLLECT_ALL_EFFECT, false, 103)]
+        [MenuItem(DATA_COLLECT_ALL_EFFECTS, false, 103)]
         private static void _DATA_COLLECT_ALL_EFFECT()
         {
             var effectConfigAsset = AssetDatabase.LoadAssetAtPath<EffectConfigAsset>(Const.EFFECT_CONFIG_PATH);
@@ -107,8 +107,19 @@ namespace EffectPerformanceAnalysis
                 throw new Exception(string.Format("未找到特效配置文件，请先通过 '{0}' 生成！", DATA_CREATE_EFFECT_CONFIG_ASSET));
             }
             effectConfigAsset.Init();
-            effectConfigAsset.CollectAllEffect();
+            var dict = Pools.Get<Dictionary<int, GameObject>>();
+            effectConfigAsset.CollectAllEffects(dict);
+            if (dict.Count <= 0)
+            {
+                throw new Exception(string.Format("未找到特效预制体，请检查 CustomEffectConfigAsset.CollectAllEffects 是否正确实现！"));
+            }
+            effectConfigAsset.Clear();
+            foreach (var item in dict)
+            {
+                effectConfigAsset.AddEffect(item.Value, item.Key);
+            }
             effectConfigAsset.Save();
+            Pools.Release(dict);
         }
 
         [MenuItem(GROUP_OTHER, false, 201)]
@@ -123,8 +134,8 @@ namespace EffectPerformanceAnalysis
             return false;
         }
 
-        [MenuItem(OTHER_UPDATE_ALL_EFFECT, false, 202)]
-        private static void _OTHER_UPDATE_ALL_EFFECT()
+        [MenuItem(OTHER_UPDATE_ALL_EFFECTS, false, 202)]
+        private static void _OTHER_UPDATE_ALL_EFFECTS()
         {
             var effectConfigAsset = AssetDatabase.LoadAssetAtPath<EffectConfigAsset>(Const.EFFECT_CONFIG_PATH);
             if (effectConfigAsset == null)
