@@ -12,7 +12,6 @@ namespace EffectPerformanceAnalysis
         private EffectConfigAsset m_EffectConfigAsset;
         private GameObject m_GameObject;
         private Transform m_Transform;
-        private GameObject m_Prefab;
         private RootNode m_RootNode;
 
         private Vector2 m_ScrollViewTitlePos = Vector2.zero;
@@ -91,19 +90,15 @@ namespace EffectPerformanceAnalysis
 
             }
 
-            if (m_GameObject == go)
-            {
-                return;
-            }
             m_ScrollViewTitlePos = Vector2.zero;
             m_ScrollViewPos = Vector2.zero;
             m_IsEffect = false;
 
             m_GameObject = go;
-            m_Transform = go.transform;
+            m_Transform = go != null ? go.transform : null;
 
-            m_Prefab = Utils.GetPrefab(go);
-            if (m_Prefab == null)
+            var prefab = Utils.GetPrefab(m_GameObject);
+            if (prefab == null)
             {
                 m_IsVaild = false;
             }
@@ -120,7 +115,7 @@ namespace EffectPerformanceAnalysis
                     m_EffectConfigAsset.Init();
                 }
             }
-            if (m_EffectConfigAsset != null && m_EffectConfigAsset.IsEffect(m_Prefab))
+            if (m_EffectConfigAsset != null && m_EffectConfigAsset.IsEffect(prefab))
             {
                 m_IsEffect = true;
             }
@@ -131,9 +126,9 @@ namespace EffectPerformanceAnalysis
 
             if (m_IsVaild && m_IsEffect)
             {
+                m_EffectId = m_EffectConfigAsset.GetEffectId(prefab);
+                m_SortingOrderStart = m_EffectConfigAsset.GetSortingOrderStart(prefab);
                 m_RootNode = Performance.Analyze(m_GameObject, m_SortingOrderStart);
-                m_SortingOrderStart = m_EffectConfigAsset.GetSortingOrderStart(m_Prefab);
-                m_EffectId = m_EffectConfigAsset.GetEffectId(m_Prefab);
                 m_BatchCount = m_RootNode.passCount;
             }
             else
@@ -172,26 +167,14 @@ namespace EffectPerformanceAnalysis
 
             if (GUILayout.Button(Const.METRICS_UI_RESET, GUILayout.Width(m_ButtonWidth)))
             {
-                if (m_RootNode.count > 0)
-                {
-                    for (int i = 0; i < m_RootNode.count; i++)
-                    {
-                        m_RootNode[i][0].renderer.sortingOrder = m_RootNode[i].sortingOrderRecommend - m_SortingOrderStart;
-                    }
-                    EditorUtility.SetDirty(m_GameObject);
-                }
+                m_RootNode.Reset();
+                m_RootNode = Performance.Analyze(m_GameObject, m_SortingOrderStart);
             }
 
             if (GUILayout.Button(Const.METRICS_UI_UPDATE, GUILayout.Width(m_ButtonWidth)))
             {
-                if (m_RootNode.count > 0)
-                {
-                    for (int i = 0; i < m_RootNode.count; i++)
-                    {
-                        m_RootNode[i][0].renderer.sortingOrder = m_RootNode[i].sortingOrderRecommend;
-                    }
-                    EditorUtility.SetDirty(m_GameObject);
-                }
+                m_RootNode.Update();
+                m_RootNode = Performance.Analyze(m_GameObject, m_SortingOrderStart);
             }
             GUILayout.EndHorizontal();
 

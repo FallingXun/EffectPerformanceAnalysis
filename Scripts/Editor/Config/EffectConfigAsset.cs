@@ -11,20 +11,29 @@ namespace EffectPerformanceAnalysis
     {
         [Header("单个特效分配的 OrderInLayer 数量上限")]
         [SerializeField]
-        private int m_SortingOrderLimit = 30;
+        protected int m_SortingOrderLimit = 30;
 
 
         [SerializeField]
         [Header("特效列表")]
-        private List<EffectConfig> m_ConfigList = new List<EffectConfig>();
+        protected List<EffectConfig> m_ConfigList = new List<EffectConfig>();
+        public List<EffectConfig> configList
+        {
+            get
+            {
+                return m_ConfigList;
+            }
+        }
 
-        private Dictionary<GameObject, EffectConfig> m_ConfigDict = new Dictionary<GameObject, EffectConfig>();
-        private Dictionary<int, GameObject> m_IdDict = new Dictionary<int, GameObject>();
+        protected Dictionary<GameObject, EffectConfig> m_ConfigDict = new Dictionary<GameObject, EffectConfig>();
+        protected Dictionary<int, GameObject> m_IdDict = new Dictionary<int, GameObject>();
+
 
         public virtual void Init()
         {
             Desrialize();
         }
+
 
         public virtual bool IsEffect(GameObject go)
         {
@@ -34,6 +43,39 @@ namespace EffectPerformanceAnalysis
                 return true;
             }
             return false;
+        }
+
+        public virtual void Clear()
+        {
+            m_ConfigList.Clear();
+            m_ConfigDict.Clear();
+            m_IdDict.Clear();
+        }
+
+        public virtual void Serialize()
+        {
+            m_ConfigList.Clear();
+            m_ConfigList.AddRange(m_ConfigDict.Values);
+            m_ConfigList.Sort((a, b) =>
+            {
+                return a.id.CompareTo(b.id);
+            });
+        }
+
+        public virtual void Desrialize()
+        {
+            m_ConfigDict.Clear();
+            m_IdDict.Clear();
+            foreach (var item in m_ConfigList)
+            {
+                m_ConfigDict[item.prefab] = item;
+                m_IdDict[item.id] = item.prefab;
+            }
+        }
+
+        public virtual void CollectAllEffect()
+        {
+            throw new Exception("请重写 EffectConfigAsset.CollectAllEffect 方法，收集所有特效预制体，为每个特效分配 id，通过 AddEffect 方法加入到配置中，最后通过 Save 方法保存配置！");
         }
 
         public void AddEffect(GameObject go, int id)
@@ -71,35 +113,6 @@ namespace EffectPerformanceAnalysis
             AssetDatabase.SaveAssetIfDirty(this);
         }
 
-
-        public virtual void Clear()
-        {
-            m_ConfigList.Clear();
-            m_ConfigDict.Clear();
-            m_IdDict.Clear();
-        }
-
-        public virtual void Serialize()
-        {
-            m_ConfigList.Clear();
-            m_ConfigList.AddRange(m_ConfigDict.Values);
-            m_ConfigList.Sort((a, b) =>
-            {
-                return a.id.CompareTo(b.id);
-            });
-        }
-
-        public virtual void Desrialize()
-        {
-            m_ConfigDict.Clear();
-            m_IdDict.Clear();
-            foreach (var item in m_ConfigList)
-            {
-                m_ConfigDict[item.prefab] = item;
-                m_IdDict[item.id] = item.prefab;
-            }
-        }
-
         public int GetSortingOrderStart(GameObject go)
         {
             var prefab = Utils.GetPrefab(go);
@@ -121,6 +134,7 @@ namespace EffectPerformanceAnalysis
             }
             return -1;
         }
+
     }
 
     [Serializable]

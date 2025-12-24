@@ -25,5 +25,10 @@ namespace EffectPerformanceAnalysis
         {
             base.Desrialize();
         }
+
+        public override void CollectAllEffect()
+        {
+            base.CollectAllEffect()
+        }
     }
 }

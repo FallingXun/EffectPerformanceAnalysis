@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace EffectPerformanceAnalysis
 {
     public class RootNode : IMetrics
     {
+        private Transform m_Root = null;
         private List<RenderNode> m_RenderNodeList = null;
 
         public int sortingOrderStart { get; private set; }
@@ -68,6 +70,7 @@ namespace EffectPerformanceAnalysis
 
         public void Init(Transform root, int sortingOrderStart)
         {
+            m_Root = root;
             if (m_RenderNodeList == null)
             {
                 m_RenderNodeList = new List<RenderNode>();
@@ -113,7 +116,7 @@ namespace EffectPerformanceAnalysis
             renderTriangleCount = 0;
             passCount = 0;
             particleMaxCount = 0;
-            for (int i = 0; i < m_RenderNodeList.Count; i++)
+            for (int i = 0; i < count; i++)
             {
                 meshVertexCount += m_RenderNodeList[i].meshVertexCount;
                 meshVertexAttributeCount = Mathf.Max(meshVertexAttributeCount, m_RenderNodeList[i].meshVertexAttributeCount);
@@ -179,6 +182,28 @@ namespace EffectPerformanceAnalysis
             Pools.Release(textureList);
         }
 
+        public void Update()
+        {
+            if (count > 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    m_RenderNodeList[i][0].renderer.sortingOrder = m_RenderNodeList[i].sortingOrderRecommend;
+                }
+                EditorUtility.SetDirty(m_Root.gameObject);
+            }
+        }
 
+        public void Reset()
+        {
+            if (count > 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    m_RenderNodeList[i][0].renderer.sortingOrder = m_RenderNodeList[i].sortingOrderRecommend - sortingOrderStart;
+                }
+                EditorUtility.SetDirty(m_Root.gameObject);
+            }
+        }
     }
 }

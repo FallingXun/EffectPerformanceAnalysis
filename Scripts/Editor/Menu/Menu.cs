@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Reflection;
 using System.IO;
+using System;
 
 namespace EffectPerformanceAnalysis
 {
@@ -18,6 +19,10 @@ namespace EffectPerformanceAnalysis
 
         private const string GROUP_DATA = EFFECT_PERFORMANCE_ANALYSIS + "Data";
         private const string DATA_CREATE_EFFECT_CONFIG_ASSET = EFFECT_PERFORMANCE_ANALYSIS + "Create Effect Config Asset";
+        private const string DATA_COLLECT_ALL_EFFECT = EFFECT_PERFORMANCE_ANALYSIS + "Collect All Effects";
+
+        private const string GROUP_OTHER = EFFECT_PERFORMANCE_ANALYSIS + "Other";
+        private const string OTHER_UPDATE_ALL_EFFECT = EFFECT_PERFORMANCE_ANALYSIS + "Update All Effects 's Order In Layer";
 
 
         [MenuItem(GROUP_SCRIPTS, false, 1)]
@@ -91,6 +96,64 @@ namespace EffectPerformanceAnalysis
             AssetDatabase.CreateAsset(customEffectConfigAssetSO, Const.EFFECT_CONFIG_PATH);
             AssetDatabase.Refresh();
         }
+
+
+        [MenuItem(DATA_COLLECT_ALL_EFFECT, false, 103)]
+        private static void _DATA_COLLECT_ALL_EFFECT()
+        {
+            var effectConfigAsset = AssetDatabase.LoadAssetAtPath<EffectConfigAsset>(Const.EFFECT_CONFIG_PATH);
+            if (effectConfigAsset == null)
+            {
+                throw new Exception(string.Format("未找到特效配置文件，请先通过 '{0}' 生成！", DATA_CREATE_EFFECT_CONFIG_ASSET));
+            }
+            effectConfigAsset.Init();
+            effectConfigAsset.CollectAllEffect();
+            effectConfigAsset.Save();
+        }
+
+        [MenuItem(GROUP_OTHER, false, 201)]
+        private static void _GROUP_OTHER()
+        {
+
+        }
+
+        [MenuItem(GROUP_OTHER, true, 201)]
+        private static bool __GROUP_OTHER()
+        {
+            return false;
+        }
+
+        [MenuItem(OTHER_UPDATE_ALL_EFFECT, false, 202)]
+        private static void _OTHER_UPDATE_ALL_EFFECT()
+        {
+            var effectConfigAsset = AssetDatabase.LoadAssetAtPath<EffectConfigAsset>(Const.EFFECT_CONFIG_PATH);
+            if (effectConfigAsset == null)
+            {
+                throw new Exception(string.Format("未找到特效配置文件，请先通过 '{0}' 生成！", DATA_CREATE_EFFECT_CONFIG_ASSET));
+            }
+            effectConfigAsset.Init();
+            if (effectConfigAsset.configList == null)
+            {
+                return;
+            }
+            foreach (var config in effectConfigAsset.configList)
+            {
+                if(config.prefab == null)
+                {
+                    continue;
+                }
+                var sortingOrderStart = effectConfigAsset.GetSortingOrderStart(config.prefab);
+                var rootNode = Performance.Analyze(config.prefab, sortingOrderStart);
+                if(rootNode == null)
+                {
+                    continue;
+                }
+                rootNode.Update();
+            }
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+
     }
 
 }
