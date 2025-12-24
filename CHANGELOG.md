@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/FallingXun/EffectPerformanceAnalysis/compare/v1.1.0...v1.2.0) (2025-12-24)
+
+
+### Features
+
+* 优化特效收集方法 ([705ce4c](https://github.com/FallingXun/EffectPerformanceAnalysis/commit/705ce4c8e4141fdb5dbc66372f6cf5bf2e274270))
+* 优化粒子最大数量总和计算 ([705ce4c](https://github.com/FallingXun/EffectPerformanceAnalysis/commit/705ce4c8e4141fdb5dbc66372f6cf5bf2e274270))
+
+
+### Bug Fixes
+
+* 修复粒子和网格错误合批问题 ([705ce4c](https://github.com/FallingXun/EffectPerformanceAnalysis/commit/705ce4c8e4141fdb5dbc66372f6cf5bf2e274270))
+
 ## [1.1.0](https://github.com/FallingXun/EffectPerformanceAnalysis/compare/v1.0.0...v1.1.0) (2025-12-24)
 
 
