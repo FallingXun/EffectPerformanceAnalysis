@@ -30,7 +30,7 @@ namespace EffectPerformanceAnalysis
         private GUIStyle m_ToggleStyle = null;
         private GUIStyle m_TitleStyle = null;
         private GUIStyle m_TextStyle = null;
-        private int m_IndexWidth = 50;
+        private int m_IndexWidth = 30;
         private int m_ObjectWidth = 150;
         private int m_MetricsWidth = 100;
         private int m_ButtonWidth = 50;
@@ -71,6 +71,7 @@ namespace EffectPerformanceAnalysis
                 m_TextStyle = new GUIStyle();
                 m_TextStyle.alignment = TextAnchor.MiddleCenter;
                 m_TextStyle.normal.textColor = Color.white;
+                //m_TextStyle.normal.background = Texture2D.grayTexture;
                 m_TextStyle.richText = true;
             }
 
@@ -232,7 +233,9 @@ namespace EffectPerformanceAnalysis
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginHorizontal();
-                GUILayout.BeginVertical();
+                var pos2 = new Vector2(0, m_ScrollViewPos.y);
+                var scrollViewHeight = Math.Min(400, m_RootNode.count * 20 + 20);
+                GUILayout.BeginScrollView(pos2, GUIStyle.none, GUIStyle.none, GUILayout.Width(m_IndexWidth + m_ObjectWidth + 5), GUILayout.Height(scrollViewHeight - 15));
                 for (int i = 0; i < m_RootNode.count; i++)
                 {
                     GUILayout.BeginHorizontal();
@@ -240,9 +243,9 @@ namespace EffectPerformanceAnalysis
                     EditorGUILayout.ObjectField(m_RootNode[i][0].renderer, typeof(Renderer), GUILayout.Width(m_ObjectWidth));
                     GUILayout.EndHorizontal();
                 }
-                GUILayout.EndVertical();
-                var pos2 = new Vector2(m_ScrollViewTitlePos.x, m_ScrollViewPos.y);
-                m_ScrollViewPos = GUILayout.BeginScrollView(pos2, GUILayout.Height(Math.Min(400, m_RootNode.count * 20 + 20)));
+                GUILayout.EndScrollView();
+                var pos3 = new Vector2(m_ScrollViewTitlePos.x, m_ScrollViewPos.y);
+                m_ScrollViewPos = GUILayout.BeginScrollView(pos3, GUILayout.Height(scrollViewHeight));
                 for (int i = 0; i < m_RootNode.count; i++)
                 {
                     GUILayout.BeginHorizontal();
