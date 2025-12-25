@@ -59,7 +59,11 @@ namespace EffectPerformanceAnalysis
 
         public override int GetHashCode()
         {
+#if UNITY_2022_3_OR_NEWER
             return HashCode.Combine(depth);
+#else
+            return depth.GetHashCode();
+#endif
         }
     }
 

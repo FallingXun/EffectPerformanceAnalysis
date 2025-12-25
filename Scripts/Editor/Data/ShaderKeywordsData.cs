@@ -81,7 +81,11 @@ namespace EffectPerformanceAnalysis
 
         public override int GetHashCode()
         {
+#if UNITY_2022_3_OR_NEWER
             return HashCode.Combine(count, shaderKeywords);
+#else
+            return shaderKeywords.GetHashCode();
+#endif
         }
     }
 }

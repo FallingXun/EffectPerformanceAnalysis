@@ -30,7 +30,11 @@ namespace EffectPerformanceAnalysis
                 var assetPath = AssetDatabase.GetAssetPath(go);
                 if (string.IsNullOrEmpty(assetPath))
                 {
+#if UNITY_2022_3_OR_NEWER
                     var prefabStage = UnityEditor.SceneManagement.PrefabStageUtility.GetPrefabStage(go);
+#else
+                    var prefabStage = UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetPrefabStage(go);
+#endif
                     if (prefabStage != null)
                     {
                         if (prefabStage.prefabContentsRoot == go)
