@@ -41,7 +41,7 @@
             - `Id` ：特效的 ID ，用于标识特效，最小为 0 ，最大为 32767 / `Sorting Order Limit`，每个特效的 ID 都是唯一的。
             - `Prefab` ：特效的预制体对象。
             - `Name` ：特效的名称（通常为预制体名）。 
-- ![CustomEffectConfigAsset.png](./Images/CustomEffectConfigAsset.png)
+![CustomEffectConfigAsset.png](./Images/CustomEffectConfigAsset.png)
 
 
 ## 添加特效
@@ -90,6 +90,13 @@ namespace EffectPerformanceAnalysis
 - 如图所示，上半部分为特效的整体性能信息，下半部分为每个有效 Renderer 对象（enable 且有材质）的性能信息。
 - 每个特效的 Order In Layer 的起始值，由特效的 ID 决定，即：起始值 = ID * `Sorting Order Limit` 。每个 ID 都有固定的 Order In Layer 范围，因此对于同一个特效，当 ID 修改时，Order In Layer 的范围也会改变，需要重新设置特效的层级。
 - 每个特效的 `Renderer` 对象，会按照一定的顺序进行排序，使得所有相互能合批的对象都排在一起。排序完成后，对所有对象进行合批检查，从当前特效 ID 对应的 `Order In Layer` 起始值开始，为每个对象分配 `Order In Layer` 值。同一批次的 `Renderer` 对象，使用相同的 `Order In Layer` 层级，不同批次则递增，`[]` 中的值即为计算后的推荐值。对于特效制作过程中预先设定好 `Order In Layer` 的对象，会保留其和其他对象直接的相对关系，从而保证特效层级修改后的表现结果正确性。
+
+## 数据监测
+- 通过点击 Unity 菜单栏的 `Effect Performance Analysis/Create Effect Limit Config Asset` 和 `Effect Performance Analysis/Create Effect Renderer Limit Config Asset` ，可分别创建 `EffectLimitConfig.asset` 和 `RendererLimitConfig.asset` ，用于设置特效指标的上限值，其中：
+    - `EffectLimitConfig.asset` 用于设置特效整体的指标上限。![EffectLimitConfig.png](./Images/EffectLimitConfig.png)
+    - `RendererLimitConfig.asset` 用于设置单个 `Renderer` 对象的指标上限。![RendererLimitConfig.png](./Images/RendererLimitConfig.png)
+- 设置完成后，数值超过上限值的，则该项结果会显示成红色，从而快速定位性能问题。
+[Qualified.png](./Images/Qualified.png)
 
 ## 层级更新
 - 对于单个特效，通过点击 Inspector 面板的 “更新” 按钮，即可将推荐值设置到 `Order In Layer` 中。点击 “重置” 按钮，即可将更新后的值设置为从 0 开始的递增值，方便特效制作修改。
