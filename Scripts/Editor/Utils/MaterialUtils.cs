@@ -41,7 +41,7 @@ namespace EffectPerformanceAnalysis
         {
             if (material != null)
             {
-                // todo: 阴影等 pass 需要剔除
+                // todo: 阴影、深度图等 pass 未剔除，存在此类 pass 则会出现计算错误
                 return material.passCount;
             }
             return 0;

@@ -19,7 +19,7 @@ namespace EffectPerformanceAnalysis
 
         public static bool UsingSRP()
         {
-            return GraphicsSettings.currentRenderPipeline != null;
+            return GraphicsSettings.useScriptableRenderPipelineBatching;
         }
 
 
