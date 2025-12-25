@@ -11,19 +11,14 @@ namespace EffectPerformanceAnalysis
             base.Init();
         }
 
-        public override bool IsEffect(GameObject go)
+        public virtual void Save()
         {
-            return base.IsEffect(go);
+            base.Save();
         }
 
-        public override void Serialize()
+        public override void Clear()
         {
-            base.Serialize();
-        }
-
-        public override void Desrialize()
-        {
-            base.Desrialize();
+            base.Clear();
         }
 
         public override void CollectAllEffects(Dictionary<int, GameObject> allEffectsDict)

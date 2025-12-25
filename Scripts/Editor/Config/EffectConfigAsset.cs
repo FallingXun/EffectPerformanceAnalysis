@@ -34,8 +34,22 @@ namespace EffectPerformanceAnalysis
             Desrialize();
         }
 
+        public virtual void Save()
+        {
+            Serialize();
+            EditorUtility.SetDirty(this);
+            AssetDatabase.SaveAssetIfDirty(this);
+        }
 
-        public virtual bool IsEffect(GameObject go)
+
+        public virtual void Clear()
+        {
+            m_ConfigList.Clear();
+            m_ConfigDict.Clear();
+            m_IdDict.Clear();
+        }
+
+        public bool IsEffect(GameObject go)
         {
             var prefab = Utils.GetPrefab(go);
             if (prefab != null && m_ConfigDict.ContainsKey(prefab))
@@ -45,35 +59,6 @@ namespace EffectPerformanceAnalysis
             return false;
         }
 
-        public virtual void Clear()
-        {
-            m_ConfigList.Clear();
-            m_ConfigDict.Clear();
-            m_IdDict.Clear();
-        }
-
-        public virtual void Serialize()
-        {
-            m_ConfigList.Clear();
-            m_ConfigList.AddRange(m_ConfigDict.Values);
-            m_ConfigList.Sort((a, b) =>
-            {
-                return a.id.CompareTo(b.id);
-            });
-        }
-
-        public virtual void Desrialize()
-        {
-            m_ConfigDict.Clear();
-            m_IdDict.Clear();
-            foreach (var item in m_ConfigList)
-            {
-                m_ConfigDict[item.prefab] = item;
-                m_IdDict[item.id] = item.prefab;
-            }
-        }
-
-        public abstract void CollectAllEffects(Dictionary<int, GameObject> allEffectsDict);
 
         public void AddEffect(GameObject go, int id)
         {
@@ -103,12 +88,6 @@ namespace EffectPerformanceAnalysis
             m_ConfigDict[prefab] = config;
         }
 
-        public void Save()
-        {
-            Serialize();
-            EditorUtility.SetDirty(this);
-            AssetDatabase.SaveAssetIfDirty(this);
-        }
 
         public int GetSortingOrderStart(GameObject go)
         {
@@ -130,6 +109,30 @@ namespace EffectPerformanceAnalysis
                 return config.id;
             }
             return -1;
+        }
+
+        public abstract void CollectAllEffects(Dictionary<int, GameObject> allEffectsDict);
+
+
+        protected void Serialize()
+        {
+            m_ConfigList.Clear();
+            m_ConfigList.AddRange(m_ConfigDict.Values);
+            m_ConfigList.Sort((a, b) =>
+            {
+                return a.id.CompareTo(b.id);
+            });
+        }
+
+        protected void Desrialize()
+        {
+            m_ConfigDict.Clear();
+            m_IdDict.Clear();
+            foreach (var item in m_ConfigList)
+            {
+                m_ConfigDict[item.prefab] = item;
+                m_IdDict[item.id] = item.prefab;
+            }
         }
 
     }

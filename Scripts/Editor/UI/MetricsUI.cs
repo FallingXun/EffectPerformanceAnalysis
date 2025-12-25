@@ -74,20 +74,22 @@ namespace EffectPerformanceAnalysis
                 m_TextStyle.richText = true;
             }
 
-            m_MetricsNameDict.Clear();
-            m_MetricsStateDict.Clear();
-            foreach (EMetrics metricsType in Enum.GetValues(typeof(EMetrics)))
+            if(m_MetricsNameDict.Count<=0|| m_MetricsStateDict.Count <= 0)
             {
-                var attributes = metricsType.GetType().GetField(metricsType.ToString()).GetCustomAttributes(false);
-                foreach (var attribute in attributes)
+                m_MetricsNameDict.Clear();
+                m_MetricsStateDict.Clear();
+                foreach (EMetrics metricsType in Enum.GetValues(typeof(EMetrics)))
                 {
-                    if (attribute is DisplayAttribute display)
+                    var attributes = metricsType.GetType().GetField(metricsType.ToString()).GetCustomAttributes(false);
+                    foreach (var attribute in attributes)
                     {
-                        m_MetricsNameDict[metricsType] = display.name;
+                        if (attribute is DisplayAttribute display)
+                        {
+                            m_MetricsNameDict[metricsType] = display.name;
+                        }
                     }
+                    m_MetricsStateDict[metricsType] = PlayerPrefs.GetInt(metricsType.ToString(), 1) > 0;
                 }
-                m_MetricsStateDict[metricsType] = PlayerPrefs.GetInt(metricsType.ToString(), 1) > 0;
-
             }
 
             m_ScrollViewTitlePos = Vector2.zero;
