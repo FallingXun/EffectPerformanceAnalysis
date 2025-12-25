@@ -96,7 +96,7 @@ namespace EffectPerformanceAnalysis
     - `EffectLimitConfig.asset` 用于设置特效整体的指标上限。![EffectLimitConfig.png](./Images/EffectLimitConfig.png)
     - `RendererLimitConfig.asset` 用于设置单个 `Renderer` 对象的指标上限。![RendererLimitConfig.png](./Images/RendererLimitConfig.png)
 - 设置完成后，数值超过上限值的，则该项结果会显示成红色，从而快速定位性能问题。
-[Qualified.png](./Images/Qualified.png)
+![Qualified.png](./Images/Qualified.png)
 
 ## 层级更新
 - 对于单个特效，通过点击 Inspector 面板的 “更新” 按钮，即可将推荐值设置到 `Order In Layer` 中。点击 “重置” 按钮，即可将更新后的值设置为从 0 开始的递增值，方便特效制作修改。
