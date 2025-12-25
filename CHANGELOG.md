@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.0](https://github.com/FallingXun/EffectPerformanceAnalysis/compare/v1.2.0...v1.3.0) (2025-12-25)
+
+
+### Features
+
+* 优化特效配置类方法 ([56de41b](https://github.com/FallingXun/EffectPerformanceAnalysis/commit/56de41b419d61fabeb5251f847d27c705b7a1999))
+* 优化界面初始化流程 ([56de41b](https://github.com/FallingXun/EffectPerformanceAnalysis/commit/56de41b419d61fabeb5251f847d27c705b7a1999))
+* 新增性能指标上限功能 ([8c7b991](https://github.com/FallingXun/EffectPerformanceAnalysis/commit/8c7b991213bac34e35ce694f8697e5b9e9998875))
+
 ## [1.2.0](https://github.com/FallingXun/EffectPerformanceAnalysis/compare/v1.1.0...v1.2.0) (2025-12-24)
 
 
