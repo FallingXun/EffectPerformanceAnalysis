@@ -9,7 +9,7 @@ namespace EffectPerformanceAnalysis
 {
     public abstract class EffectConfigAsset : ScriptableObject
     {
-        [Header("单个特效分配的 OrderInLayer 数量上限")]
+        [Header("单个特效分配的 Order In Layer 数量上限")]
         [SerializeField]
         protected int m_SortingOrderLimit = 30;
 

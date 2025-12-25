@@ -19,6 +19,8 @@ namespace EffectPerformanceAnalysis
 
         private const string GROUP_DATA = EFFECT_PERFORMANCE_ANALYSIS + "Data";
         private const string DATA_CREATE_EFFECT_CONFIG_ASSET = EFFECT_PERFORMANCE_ANALYSIS + "Create Effect Config Asset";
+        private const string DATA_CREATE_EFFECT_LIMIT_CONFIG_ASSET = EFFECT_PERFORMANCE_ANALYSIS + "Create Effect Limit Config Asset";
+        private const string DATA_CREATE_EFFECT_RENDERER_LIMIT_CONFIG_ASSET = EFFECT_PERFORMANCE_ANALYSIS + "Create Effect Renderer Limit Config Asset";
         private const string DATA_COLLECT_ALL_EFFECTS = EFFECT_PERFORMANCE_ANALYSIS + "Collect All Effects";
 
         private const string GROUP_OTHER = EFFECT_PERFORMANCE_ANALYSIS + "Other";
@@ -98,7 +100,34 @@ namespace EffectPerformanceAnalysis
         }
 
 
-        [MenuItem(DATA_COLLECT_ALL_EFFECTS, false, 103)]
+        [MenuItem(DATA_CREATE_EFFECT_LIMIT_CONFIG_ASSET, false, 103)]
+        private static void _DATA_CREATE_EFFECT_LIMIT_CONFIG_ASSET()
+        {
+            var effectLimitConfigAssetSO = ScriptableObject.CreateInstance<MetricsLimitConfigAsset>();
+            var effectLimitConfigDirPath = Path.GetDirectoryName(Path.Combine(Directory.GetCurrentDirectory(), Const.EFFECT_LIMIT_CONFIG_PATH));
+            if (Directory.Exists(effectLimitConfigDirPath) == false)
+            {
+                Directory.CreateDirectory(effectLimitConfigDirPath);
+            }
+            AssetDatabase.CreateAsset(effectLimitConfigAssetSO, Const.EFFECT_LIMIT_CONFIG_PATH);
+            AssetDatabase.Refresh();
+        }
+
+
+        [MenuItem(DATA_CREATE_EFFECT_RENDERER_LIMIT_CONFIG_ASSET, false, 104)]
+        private static void _DATA_CREATE_EFFECT_RENDERER_LIMIT_CONFIG_ASSET()
+        {
+            var effectRendererLimitConfigAssetSO = ScriptableObject.CreateInstance<MetricsLimitConfigAsset>();
+            var effectRendererLimitConfigDirPath = Path.GetDirectoryName(Path.Combine(Directory.GetCurrentDirectory(), Const.EFFECT_RENDERER_LIMIT_CONFIG_PATH));
+            if (Directory.Exists(effectRendererLimitConfigDirPath) == false)
+            {
+                Directory.CreateDirectory(effectRendererLimitConfigDirPath);
+            }
+            AssetDatabase.CreateAsset(effectRendererLimitConfigAssetSO, Const.EFFECT_RENDERER_LIMIT_CONFIG_PATH);
+            AssetDatabase.Refresh();
+        }
+
+        [MenuItem(DATA_COLLECT_ALL_EFFECTS, false, 105)]
         private static void _DATA_COLLECT_ALL_EFFECT()
         {
             var effectConfigAsset = AssetDatabase.LoadAssetAtPath<EffectConfigAsset>(Const.EFFECT_CONFIG_PATH);

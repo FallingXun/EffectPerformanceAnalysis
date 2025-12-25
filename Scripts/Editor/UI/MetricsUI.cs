@@ -10,14 +10,14 @@ namespace EffectPerformanceAnalysis
     public class MetricsUI : IGUI
     {
         private EffectConfigAsset m_EffectConfigAsset;
+        private MetricsLimitConfigAsset m_EffectLimitConfigAsset;
+        private MetricsLimitConfigAsset m_EffectRendererLimitConfigAsset;
         private GameObject m_GameObject;
         private Transform m_Transform;
         private RootNode m_RootNode;
 
         private Vector2 m_ScrollViewTitlePos = Vector2.zero;
         private Vector2 m_ScrollViewPos = Vector2.zero;
-        private bool m_IsEffect = false;
-        private bool m_IsVaild = false;
         private int m_SortingOrderStart = Const.SORTING_ORDER_INVAILD;
         private int m_EffectId = -1;
         private int m_BatchCount = 0;
@@ -74,7 +74,7 @@ namespace EffectPerformanceAnalysis
                 m_TextStyle.richText = true;
             }
 
-            if(m_MetricsNameDict.Count<=0|| m_MetricsStateDict.Count <= 0)
+            if (m_MetricsNameDict.Count <= 0 || m_MetricsStateDict.Count <= 0)
             {
                 m_MetricsNameDict.Clear();
                 m_MetricsStateDict.Clear();
@@ -94,21 +94,20 @@ namespace EffectPerformanceAnalysis
 
             m_ScrollViewTitlePos = Vector2.zero;
             m_ScrollViewPos = Vector2.zero;
-            m_IsEffect = false;
+            var isVaild = true;
 
             m_GameObject = go;
             m_Transform = go != null ? go.transform : null;
 
-            var prefab = Utils.GetPrefab(m_GameObject);
-            if (prefab == null)
-            {
-                m_IsVaild = false;
-            }
-            else
-            {
-                m_IsVaild = true;
-            }
 
+            if (m_EffectLimitConfigAsset == null)
+            {
+                m_EffectLimitConfigAsset = AssetDatabase.LoadAssetAtPath<MetricsLimitConfigAsset>(Const.EFFECT_LIMIT_CONFIG_PATH);
+            }
+            if (m_EffectRendererLimitConfigAsset == null)
+            {
+                m_EffectRendererLimitConfigAsset = AssetDatabase.LoadAssetAtPath<MetricsLimitConfigAsset>(Const.EFFECT_RENDERER_LIMIT_CONFIG_PATH);
+            }
             if (m_EffectConfigAsset == null)
             {
                 m_EffectConfigAsset = AssetDatabase.LoadAssetAtPath<EffectConfigAsset>(Const.EFFECT_CONFIG_PATH);
@@ -117,19 +116,16 @@ namespace EffectPerformanceAnalysis
                     m_EffectConfigAsset.Init();
                 }
             }
-            if (m_EffectConfigAsset != null && m_EffectConfigAsset.IsEffect(prefab))
+
+            if (m_EffectConfigAsset == null || m_EffectConfigAsset.IsEffect(m_GameObject) == false)
             {
-                m_IsEffect = true;
-            }
-            else
-            {
-                m_IsEffect = false;
+                isVaild = false;
             }
 
-            if (m_IsVaild && m_IsEffect)
+            if (isVaild)
             {
-                m_EffectId = m_EffectConfigAsset.GetEffectId(prefab);
-                m_SortingOrderStart = m_EffectConfigAsset.GetSortingOrderStart(prefab);
+                m_EffectId = m_EffectConfigAsset.GetEffectId(m_GameObject);
+                m_SortingOrderStart = m_EffectConfigAsset.GetSortingOrderStart(m_GameObject);
                 m_RootNode = Performance.Analyze(m_GameObject, m_SortingOrderStart);
                 m_BatchCount = m_RootNode.passCount;
             }
@@ -160,7 +156,13 @@ namespace EffectPerformanceAnalysis
 
             GUILayout.BeginHorizontal();
             EditorGUILayout.LabelField(string.Format("{0}£º{1}", Const.METRICS_UI_EFFECT_ID, m_EffectId), m_MainStyle);
-            EditorGUILayout.LabelField(string.Format("{0}£º{1}", Const.METRICS_UI_BATCH_COUNT, m_BatchCount), m_MainStyle);
+
+            var batchCount = MetricsUtils.GetMetricsValueFormat(EMetrics.PassCount, m_RootNode);
+            if (MetricsUtils.IsQualified(EMetrics.PassCount, m_RootNode, m_EffectLimitConfigAsset) == false)
+            {
+                batchCount = string.Format("<color=red>{0}</color>", batchCount);
+            }
+            EditorGUILayout.LabelField(string.Format("{0}£º{1}", Const.METRICS_UI_BATCH_COUNT, batchCount), m_MainStyle);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
@@ -192,7 +194,11 @@ namespace EffectPerformanceAnalysis
                     GUILayout.BeginHorizontal();
                 }
                 var name = m_MetricsNameDict[metricsType];
-                var value = GetMetricsValue(m_RootNode, metricsType);
+                var value = MetricsUtils.GetMetricsValueFormat(metricsType, m_RootNode);
+                if (MetricsUtils.IsQualified(metricsType, m_RootNode, m_EffectLimitConfigAsset) == false)
+                {
+                    value = string.Format("<color=red>{0}</color>", value);
+                }
                 var state = m_MetricsStateDict[metricsType];
                 m_MetricsStateDict[metricsType] = EditorGUILayout.ToggleLeft(string.Format("{0}£º{1}", name, value), state, m_ToggleStyle, GUILayout.Width(m_MetricsStateWidth));
                 if (state != m_MetricsStateDict[metricsType])
@@ -246,7 +252,11 @@ namespace EffectPerformanceAnalysis
                         {
                             continue;
                         }
-                        var value = GetMetricsValue(m_RootNode[i], metricsType);
+                        var value = MetricsUtils.GetMetricsValueFormat(metricsType, m_RootNode[i]);
+                        if (MetricsUtils.IsQualified(metricsType, m_RootNode[i], m_EffectRendererLimitConfigAsset) == false)
+                        {
+                            value = string.Format("<color=red>{0}</color>", value);
+                        }
                         EditorGUILayout.LabelField(value, m_TextStyle, GUILayout.Width(m_MetricsWidth));
                     }
 
@@ -257,96 +267,6 @@ namespace EffectPerformanceAnalysis
             }
         }
 
-        public string GetMetricsValue(IMetrics metrics, EMetrics metricsType)
-        {
-            string value = "";
-            switch (metricsType)
-            {
-                case EMetrics.OrderInLayer:
-                    {
-                        if (metrics is RenderNode renderNode)
-                        {
-                            value = string.Format("{0}[{1}]", renderNode.sortingOrder, renderNode.sortingOrderRecommend);
-                        }
-                        else
-                        {
-                            value = metrics.sortingOrder.ToString();
-                        }
-                    }
-                    break;
-                case EMetrics.RenderQueue:
-                    {
-                        value = metrics.renderQueue.ToString();
-                    }
-                    break;
-                case EMetrics.MeshVertexCount:
-                    {
-                        value = metrics.meshVertexCount.ToString();
-                    }
-                    break;
-                case EMetrics.MeshVertexAttributes:
-                    {
-                        value = metrics.meshVertexAttributeCount.ToString();
-                    }
-                    break;
-                case EMetrics.MeshTriangleCount:
-                    {
-                        value = metrics.meshTriangleCount.ToString();
-                    }
-                    break;
-                case EMetrics.RenderVertexCount:
-                    {
-                        value = metrics.renderVertexCount.ToString();
-                    }
-                    break;
-                case EMetrics.RenderTriangleCount:
-                    {
-                        value = metrics.renderTriangleCount.ToString();
-                    }
-                    break;
-                case EMetrics.MaterialCount:
-                    {
-                        value = metrics.materialCount.ToString();
-                    }
-                    break;
-                case EMetrics.PassCount:
-                    {
-                        value = metrics.passCount.ToString();
-                    }
-                    break;
-                case EMetrics.TextureCount:
-                    {
-                        value = metrics.textureCount.ToString();
-                    }
-                    break;
-                case EMetrics.TextureSize:
-                    {
-                        value = TextureUtils.GetTextureSizeFormat(metrics.textureSize);
-                    }
-                    break;
-                case EMetrics.TextureMaxWidth:
-                    {
-                        value = metrics.textureMaxWidth.ToString();
-                    }
-                    break;
-                case EMetrics.TextureMaxHeight:
-                    {
-                        value = metrics.textureMaxHeight.ToString();
-                    }
-                    break;
-                case EMetrics.TextureMemory:
-                    {
-                        value = TextureUtils.GetTextureMemoryFormat(metrics.textureMemory);
-                    }
-                    break;
-                case EMetrics.ParticleMaxCount:
-                    {
-                        value = metrics.particleMaxCount.ToString();
-                    }
-                    break;
-            }
-            return value;
-        }
 
     }
 }

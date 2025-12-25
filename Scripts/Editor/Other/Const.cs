@@ -37,6 +37,8 @@ namespace EffectPerformanceAnalysis
         public const string PACKAGE_NAME = "Packages/com.xun.effectperformanceanalysis";
         public const string ASSET_PATH = "Assets/EffectPerformanceAnalysis";
         public const string EFFECT_CONFIG_PATH = ASSET_PATH + "/Editor/CustomEffectConfig.asset";
+        public const string EFFECT_LIMIT_CONFIG_PATH = ASSET_PATH + "/Editor/EffectLimitConfig.asset";
+        public const string EFFECT_RENDERER_LIMIT_CONFIG_PATH = ASSET_PATH + "/Editor/RendererLimitConfig.asset";
 
 
     }
