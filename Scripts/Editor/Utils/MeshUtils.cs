@@ -47,6 +47,10 @@ namespace EffectPerformanceAnalysis
                             }
                             return m_ParticleBillboardMesh;
                         }
+                    case ParticleSystemRenderMode.Mesh:
+                        {
+                            return psr.mesh;
+                        }
                 }
             }
             return null;
