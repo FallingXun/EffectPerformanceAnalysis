@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/FallingXun/EffectPerformanceAnalysis/compare/v1.3.0...v1.4.0) (2025-12-25)
+
+
+### Features
+
+* 优化上限配置数据说明 ([fc44382](https://github.com/FallingXun/EffectPerformanceAnalysis/commit/fc44382786e19971753c7bbd2e54485c8abf2949))
+
 ## [1.3.0](https://github.com/FallingXun/EffectPerformanceAnalysis/compare/v1.2.0...v1.3.0) (2025-12-25)
 
 
