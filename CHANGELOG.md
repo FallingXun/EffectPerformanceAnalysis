@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.5.0](https://github.com/FallingXun/EffectPerformanceAnalysis/compare/v1.4.0...v1.5.0) (2025-12-25)
+
+
+### Features
+
+* 优化SRP合批判断 ([9692ea3](https://github.com/FallingXun/EffectPerformanceAnalysis/commit/9692ea379aad73f53baa8fabf24a8b1a7c33381d))
+* 优化部分API的Unity版本兼容 ([ceaa728](https://github.com/FallingXun/EffectPerformanceAnalysis/commit/ceaa72806e6097f6ccacefcfbae3fe764c3af3a7))
+
+
+### Bug Fixes
+
+* 修复对象较多时排版异常问题 ([9875cbf](https://github.com/FallingXun/EffectPerformanceAnalysis/commit/9875cbf77caa203a6eb93d15fe70f377d0074392))
+* 修复粒子特效网格计算错误问题 ([49da9a7](https://github.com/FallingXun/EffectPerformanceAnalysis/commit/49da9a7f8cfb5dbbdc515665dbc46a12791936cd))
+
 ## [1.4.0](https://github.com/FallingXun/EffectPerformanceAnalysis/compare/v1.3.0...v1.4.0) (2025-12-25)
 
 
